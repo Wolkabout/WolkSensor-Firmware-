@@ -1,0 +1,14 @@
+# Compiled source #
+###################
+*.com
+*.dll
+*.exe
+*.o
+*.d
+*.hex
+*.bin
+*.elf
+*.eep
+.vs
+Debug
+Release
