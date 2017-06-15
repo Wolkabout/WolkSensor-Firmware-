@@ -5,6 +5,11 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "WolkSensor", "WolkSensor.cproj", "{59E7CBAC-A435-43D0-B75C-55702B2B16A0}"
 EndProject
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "bootloader", "bootloader\bootloader.cproj", "{3A443A1E-03FB-4573-AF40-1976EE403E9D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{59E7CBAC-A435-43D0-B75C-55702B2B16A0} = {59E7CBAC-A435-43D0-B75C-55702B2B16A0}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AVR = Debug|AVR
@@ -15,6 +20,10 @@ Global
 		{59E7CBAC-A435-43D0-B75C-55702B2B16A0}.Debug|AVR.Build.0 = Debug|AVR
 		{59E7CBAC-A435-43D0-B75C-55702B2B16A0}.Release|AVR.ActiveCfg = Release|AVR
 		{59E7CBAC-A435-43D0-B75C-55702B2B16A0}.Release|AVR.Build.0 = Release|AVR
+		{3A443A1E-03FB-4573-AF40-1976EE403E9D}.Debug|AVR.ActiveCfg = Debug|AVR
+		{3A443A1E-03FB-4573-AF40-1976EE403E9D}.Debug|AVR.Build.0 = Debug|AVR
+		{3A443A1E-03FB-4573-AF40-1976EE403E9D}.Release|AVR.ActiveCfg = Release|AVR
+		{3A443A1E-03FB-4573-AF40-1976EE403E9D}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

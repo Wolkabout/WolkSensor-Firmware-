@@ -12,6 +12,7 @@
 #include "system.h"
 #include "actuators.h"
 #include "commands_dependencies.h"
+#include "util_conversions.h"
 
 static char tmp[128];
 
@@ -210,7 +211,7 @@ static uint16_t serialize_wifi_communication_module_data(wifi_communication_modu
 	{
 		size += sprintf_P(buffer + size, PSTR(",C:%u"), total_online_time);
 	}
-	
+
 	return size;
 }
 
@@ -350,7 +351,9 @@ static uint16_t serialize_communication_and_battery_data(communication_and_batte
 {
 	uint16_t size = serialize_communication_protocol_data(&communication_and_battery_data->communication_protocol_type_data, buffer);
 	
-	return size += sprintf_P(buffer + size, PSTR(",B:%u"), communication_and_battery_data->battery_min_voltage);
+	size += sprintf_P(buffer + size, PSTR(",B:%u"), communication_and_battery_data->battery_min_voltage);
+
+	return size += sprintf_P(buffer + size, PSTR(",V:%d.%d.%d"), FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
 }
 
 static uint16_t serialize_system_item(system_t* system_item, char* buffer)
@@ -463,7 +466,7 @@ bool append_mac_address(unsigned char* mac, circular_buffer_t* message_buffer)
 
 bool append_heartbeat(uint16_t heartbeat, circular_buffer_t* message_buffer)
 {
-	sprintf_P(tmp, PSTR("HEARTBEAT %d;"), system_heartbeat);
+	sprintf_P(tmp, PSTR("HEARTBEAT %u;"), system_heartbeat);
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }
@@ -529,6 +532,7 @@ bool append_ssid(char* ssid, circular_buffer_t* message_buffer)
 bool append_pass(char* pass, circular_buffer_t* message_buffer)
 {
 	sprintf_P(tmp, PSTR("PASS %s;"), wifi_password);
+
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }
@@ -542,6 +546,10 @@ bool append_auth(uint8_t auth, circular_buffer_t* message_buffer)
 	else if (wifi_auth_type == WIFI_SECURITY_WEP)
 	{
 		sprintf_P(tmp, PSTR("AUTH %s;"), "WEP");
+	}
+	else if (wifi_auth_type == WIFI_SECURITY_WPA)
+	{
+		sprintf_P(tmp, PSTR("AUTH %s;"), "WPA");
 	}
 	else if (wifi_auth_type == WIFI_SECURITY_WPA2)
 	{
@@ -822,3 +830,45 @@ bool append_mqtt_password(char* password, circular_buffer_t* response_buffer)
 	return true;
 }
 
+bool append_temp_offset(uint16_t offset, circular_buffer_t* message_buffer)
+{
+	sprintf_P(tmp, PSTR("TEMP_OFFSET %d;"), atmo_offset[0]);
+	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
+	return true;
+}
+
+bool append_humidity_offset(uint16_t offset, circular_buffer_t* message_buffer)
+{
+	sprintf_P(tmp, PSTR("HUMIDITY_OFFSET %d;"), atmo_offset[2]);
+	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
+	return true;
+}
+
+bool append_pressure_offset(uint16_t offset, circular_buffer_t* message_buffer)
+{
+	sprintf_P(tmp, PSTR("PRESSURE_OFFSET %d;"), atmo_offset[1]);
+	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
+	return true;
+}
+
+bool append_offset_factory(char* offset_factory, circular_buffer_t* message_buffer)
+{
+	if(strcmp_P(offset_factory, PSTR("RESET")) == 0)
+	{
+		sprintf_P(tmp, PSTR("OFFSET_FACTORY %s;"), "RESET");
+	}
+	else
+	{
+		static char array[6];
+
+		sprintf_P(tmp, PSTR("OFFSET_FACTORY P:%d,"), atmo_offset_factory[1]);
+		sprintf_P(array, PSTR("T:%d,"), atmo_offset_factory[0]);
+		strcat(tmp, array);
+		sprintf_P(array, PSTR("H:%d;"), atmo_offset_factory[2]);
+		strcat(tmp, array);
+
+		LOG_PRINT(1, PSTR("tmp: %s \n\r"), tmp);
+	}
+	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
+	return true;
+}

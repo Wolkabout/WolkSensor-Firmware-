@@ -13,6 +13,8 @@
 #include "global_dependencies.h"
 #include "commands_dependencies.h"
 #include "wolksensor_dependencies.h"
+#include "wolksensor.h"
+#include "util_conversions.h"
 
 commands_dependencies_t commands_dependencies;
 
@@ -49,6 +51,12 @@ command_execution_result_t cmd_heartbeat(command_t* command, circular_buffer_t* 
 	
 	if(command->has_argument && (system_heartbeat != command->argument.uint32_argument))
 	{
+		if(command->argument.uint32_argument > MAX_NO_CONNECTION_HEARTBEAT)
+		{
+			append_bad_request(response_buffer);
+			return COMMAND_EXECUTED_SUCCESSFULLY;
+		}
+
 		LOG_PRINT(1, PSTR("Setting heartbeat: %u\r\n"), command->argument.uint32_argument);
 		system_heartbeat = command->argument.uint32_argument;
 		global_dependencies.config_write(&system_heartbeat, CFG_SYSTEM_HEARTBEAT, 1, sizeof(system_heartbeat));
@@ -264,6 +272,12 @@ command_execution_result_t cmd_port(command_t* command, circular_buffer_t* respo
 	
 	if (command->has_argument)
 	{
+		if(command->argument.uint32_argument > MAX_PORT_NUMBER)
+		{
+			append_bad_request(response_buffer);
+			return COMMAND_EXECUTED_SUCCESSFULLY;
+		}
+
 		server_port = command->argument.uint32_argument;
 		global_dependencies.config_write(&server_port, CFG_SERVER_PORT, 1, sizeof(server_port));
 		
@@ -290,6 +304,11 @@ command_execution_result_t cmd_ssid(command_t* command, circular_buffer_t* respo
 		}
 		else
 		{
+			if(strlen(command->argument.string_argument) > MAX_WIFI_SSID_SIZE)
+			{
+				append_bad_request(response_buffer);
+				return COMMAND_EXECUTED_SUCCESSFULLY;
+			}
 			strncpy(wifi_ssid, command->argument.string_argument, sizeof(wifi_ssid));
 		}
 		global_dependencies.config_write(wifi_ssid, CFG_WIFI_SSID, 1, sizeof(wifi_ssid));
@@ -317,6 +336,18 @@ command_execution_result_t cmd_pass(command_t* command, circular_buffer_t* respo
 		}
 		else
 		{
+			if(strlen(command->argument.string_argument) > MAX_WIFI_PASSWORD_SIZE)
+			{
+				append_bad_request(response_buffer);
+				return COMMAND_EXECUTED_SUCCESSFULLY;
+			}
+
+			if(wifi_auth_type == WIFI_SECURITY_WEP && ((strlen(command->argument.string_argument) < MIN_WIFI_PASSWORD_SIZE_WEP) || (strlen(command->argument.string_argument) > MAX_WIFI_PASSWORD_SIZE_WEP) || (!is_string_hex(command->argument.string_argument))) )
+			{
+				append_bad_request(response_buffer);
+				return COMMAND_EXECUTED_SUCCESSFULLY;
+			}
+
 			strncpy(wifi_password, command->argument.string_argument, sizeof(wifi_password));
 		}
 		global_dependencies.config_write(&wifi_password, CFG_WIFI_PASS, 1, sizeof(wifi_password));
@@ -346,7 +377,7 @@ command_execution_result_t cmd_auth(command_t* command, circular_buffer_t* respo
 			while(handle());
 		}
 	}
-	
+
 	append_auth(wifi_auth_type, response_buffer);
 	return COMMAND_EXECUTED_SUCCESSFULLY;
 }
@@ -493,92 +524,6 @@ command_execution_result_t cmd_set(command_t* command, circular_buffer_t* respon
 	return COMMAND_EXECUTED_SUCCESSFULLY;
 }
 
-command_execution_result_t cmd_knx_physical_address(command_t* command, circular_buffer_t* response_buffer)
-{
-	LOG(1, "Executing command KNX_PHYSICAL_ADDRESS");
-	
-	if(command->has_argument)
-	{
-		memcpy(knx_physical_address, command->argument.knx_address_argument, 2);
-		global_dependencies.config_write(&knx_physical_address, CFG_KNX_PHYSICAL_ADDRESS, 1, sizeof(knx_physical_address));
-	}
-	
-	LOG_PRINT(1, PSTR("KNX physical address %02x%02x\r\n"), knx_physical_address[0], knx_physical_address[1]);
-	append_knx_physical_address(knx_physical_address, response_buffer);
-	
-	return COMMAND_EXECUTED_SUCCESSFULLY;
-}
-
-command_execution_result_t cmd_knx_group_address(command_t* command, circular_buffer_t* response_buffer)
-{
-	LOG(1, "Executing command KNX_GROUP_ADDRESS");
-	
-	if(command->has_argument)
-	{
-		memcpy(knx_group_address, command->argument.knx_address_argument, 2);
-		global_dependencies.config_write(&knx_group_address, CFG_KNX_GROUP_ADDRESS, 1, sizeof(knx_group_address));
-	}
-	
-	LOG_PRINT(1, PSTR("KNX group address %02x%02x\r\n"), knx_group_address[0], knx_group_address[1]);
-	append_knx_group_address(knx_group_address, response_buffer);
-	
-	return COMMAND_EXECUTED_SUCCESSFULLY;
-}
-
-command_execution_result_t cmd_multicast_address(command_t* command, circular_buffer_t* response_buffer)
-{
-	LOG(1, "Executing command MULTICAST_ADDRESS");
-	
-	if (command->has_argument)
-	{
-		strncpy(knx_multicast_address, command->argument.string_argument, sizeof(knx_multicast_address));
-		global_dependencies.config_write(knx_multicast_address, CFG_KNX_MULTICAST_ADDRESS, 1, sizeof(knx_multicast_address));
-		
-		if(commands_dependencies.communication_module_close_socket)
-		{
-			communication_module_process_handle_t handle = commands_dependencies.communication_module_close_socket();
-			while(handle());
-		}
-	}
-	
-	append_multicast_address(knx_multicast_address, response_buffer);
-	return COMMAND_EXECUTED_SUCCESSFULLY;
-}
-
-command_execution_result_t cmd_multicast_port(command_t* command, circular_buffer_t* response_buffer)
-{
-	LOG(1, "Executing command MULTICAST_PORT");
-	
-	if (command->has_argument)
-	{
-		knx_multicast_port = command->argument.uint32_argument;
-		global_dependencies.config_write(&knx_multicast_port, CFG_KNX_MULTICAST_PORT, 1, sizeof(knx_multicast_port));
-		
-		if(commands_dependencies.communication_module_close_socket)
-		{
-			communication_module_process_handle_t handle = commands_dependencies.communication_module_close_socket();
-			while(handle());
-		}
-	}
-	
-	append_multicast_port(knx_multicast_port, response_buffer);
-	return COMMAND_EXECUTED_SUCCESSFULLY;
-}
-
-command_execution_result_t cmd_knx_nat(command_t* command, circular_buffer_t* response_buffer)
-{
-	LOG(1, "Executing command KNX_NAT");
-	
-	if(command->has_argument && (knx_nat != command->argument.bool_argument))
-	{
-		knx_nat = command->argument.bool_argument;
-		global_dependencies.config_write(&knx_nat, CFG_KNX_NAT, 1, sizeof(knx_nat));
-	}
-	
-	append_knx_nat_status(knx_nat, response_buffer);
-	return COMMAND_EXECUTED_SUCCESSFULLY;
-}
-
 command_execution_result_t cmd_location(command_t* command, circular_buffer_t* response_buffer)
 {
 	LOG(1, "Executing command LOCATION");
@@ -604,6 +549,133 @@ command_execution_result_t cmd_ssl(command_t* command, circular_buffer_t* respon
 	}
 	
 	append_ssl_status(ssl, response_buffer);
+	return COMMAND_EXECUTED_SUCCESSFULLY;
+}
+
+command_execution_result_t cmd_temp_offset(command_t* command, circular_buffer_t* response_buffer)
+{
+	LOG(1, "Executing command Temperature offset");
+
+	if(command->has_argument)
+	{
+		if( (command->argument.uint32_argument > TEMPERATURE_OFFSET_MAX) && (command->argument.uint32_argument < TEMPERATURE_OFFSET_MIN) )
+		{
+			append_bad_request(response_buffer);
+			return COMMAND_EXECUTED_SUCCESSFULLY;
+		}
+
+		if(!atmo_offset_factory[0] && !atmo_offset_factory[3])
+		{
+			atmo_offset_factory[3] = 1;
+			atmo_offset_factory[0] = command->argument.uint32_argument;
+			if(global_dependencies.config_write(atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
+				LOG_PRINT(1, PSTR("Factory temperature offset is written: %d \n\r"), atmo_offset_factory[0]);
+		}
+		atmo_offset[0] = command->argument.uint32_argument;
+		if(global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
+			LOG_PRINT(1, PSTR("Temperature offset is written: %d \n\r"), atmo_offset[0]);
+	}
+
+	append_temp_offset(atmo_offset[0], response_buffer);
+	return COMMAND_EXECUTED_SUCCESSFULLY;
+}
+
+command_execution_result_t cmd_humidity_offset(command_t* command, circular_buffer_t* response_buffer)
+{
+	LOG(1, "Executing command Humidity offset");
+
+	if(command->has_argument)
+	{
+		if( (command->argument.uint32_argument > HUMIDITY_OFFSET_MAX) && (command->argument.uint32_argument < HUMIDITY_OFFSET_MIN) )
+		{
+			append_bad_request(response_buffer);
+			return COMMAND_EXECUTED_SUCCESSFULLY;
+		}
+
+		if(!atmo_offset_factory[2] && !atmo_offset_factory[4])
+		{
+			atmo_offset_factory[4] = 1;
+			atmo_offset_factory[2] = command->argument.uint32_argument;
+			if(global_dependencies.config_write(atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
+			LOG_PRINT(1, PSTR("Factory temperature offset is written: %d \n\r"), atmo_offset_factory[2]);
+		}
+		atmo_offset[2] = command->argument.uint32_argument;
+		global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset));
+	}
+
+	append_humidity_offset(atmo_offset[2], response_buffer);
+	return COMMAND_EXECUTED_SUCCESSFULLY;
+}
+
+command_execution_result_t cmd_pressure_offset(command_t* command, circular_buffer_t* response_buffer)
+{
+	LOG(1, "Executing command Pressure offset");
+
+	if(command->has_argument)
+	{
+		if( (command->argument.uint32_argument > PRESSURE_OFFSET_MAX) && (command->argument.uint32_argument < PRESSURE_OFFSET_MIN) )
+		{
+			append_bad_request(response_buffer);
+			return COMMAND_EXECUTED_SUCCESSFULLY;
+		}
+
+		if(!atmo_offset_factory[1] && !atmo_offset_factory[5])
+		{
+			atmo_offset_factory[5] = 1;
+			atmo_offset_factory[1] = command->argument.uint32_argument;
+			if(global_dependencies.config_write(atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
+			LOG_PRINT(1, PSTR("Factory temperature offset is written: %d \n\r"), atmo_offset_factory[1]);
+		}
+		atmo_offset[1] = command->argument.uint32_argument;
+		global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset));
+	}
+
+	append_pressure_offset(atmo_offset[1], response_buffer);
+	return COMMAND_EXECUTED_SUCCESSFULLY;
+}
+
+command_execution_result_t cmd_offset_factory(command_t* command, circular_buffer_t* response_buffer)
+{
+	LOG(1, "Executing command Offset factory");
+
+	if(command->has_argument)
+	{
+		if(strcmp_P(command->argument.string_argument, PSTR("RESET")) == 0)
+		{
+			LOG(1, "Reset offset to factory settings occurred");
+
+			atmo_offset[0] = atmo_offset_factory[0];
+			atmo_offset[1] = atmo_offset_factory[1];
+			atmo_offset[2] = atmo_offset_factory[2];
+
+			if(global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
+			{
+				LOG_PRINT(1, PSTR("Temperature offset is written: %d \n\r"), atmo_offset[0]);
+				LOG_PRINT(1, PSTR("Pressure offset is written: %d \n\r"), atmo_offset[1]);
+				LOG_PRINT(1, PSTR("Humidity offset is written: %d \n\r"), atmo_offset[2]);
+			}
+			else
+				LOG(1, "Failed to write offset factory settings into offset eeprom");
+		}
+		else
+		{
+			append_bad_request(response_buffer);
+			return COMMAND_EXECUTED_SUCCESSFULLY;
+		}
+	}
+
+	append_offset_factory(command->argument.string_argument, response_buffer);
+	return COMMAND_EXECUTED_SUCCESSFULLY;
+}
+
+command_execution_result_t cmd_acquisition(command_t* command, circular_buffer_t* response_buffer)
+{
+	LOG(1, "Executing command Acquisition");
+
+	append_done(response_buffer);
+
+	if(commands_dependencies.acquisition) commands_dependencies.acquisition();
+
 	return COMMAND_EXECUTED_SUCCESSFULLY;
 }
 
@@ -707,26 +779,6 @@ command_execution_result_t execute_command(command_t* command, circular_buffer_t
 		{
 			return cmd_set(command, response_buffer);
 		}
-		case COMMAND_KNX_PHYSICAL_ADDRESS:
-		{
-			return cmd_knx_physical_address(command, response_buffer);
-		}
-		case COMMAND_KNX_GROUP_ADDRESS:
-		{
-			return cmd_knx_group_address(command, response_buffer);
-		}
-		case COMMAND_KNX_MULTICAST_ADDRESS:
-		{
-			return cmd_multicast_address(command, response_buffer);
-		}
-		case COMMAND_KNX_MULTICAST_PORT:
-		{
-			return cmd_multicast_port(command, response_buffer);
-		}
-		case COMMAND_KNX_NAT:
-		{
-			return cmd_knx_nat(command, response_buffer);
-		}
 		case COMMAND_LOCATION:
 		{
 			return cmd_location(command, response_buffer);
@@ -734,6 +786,26 @@ command_execution_result_t execute_command(command_t* command, circular_buffer_t
 		case COMMAND_SSL:
 		{
 			return cmd_ssl(command, response_buffer);
+		}
+		case COMMAND_TEMP_OFFSET:
+		{
+			return cmd_temp_offset(command, response_buffer);
+		}
+		case COMMAND_HUMIDITY_OFFSET:
+		{
+			return cmd_humidity_offset(command, response_buffer);
+		}
+		case COMMAND_PRESSURE_OFFSET:
+		{
+			return cmd_pressure_offset(command, response_buffer);
+		}
+		case COMMAND_OFFSET_FACTORY:
+		{
+			return cmd_offset_factory(command, response_buffer);
+		}
+		case COMMAND_ACQUISITION:
+		{
+			return cmd_acquisition(command, response_buffer);
 		}
 		default:
 		{

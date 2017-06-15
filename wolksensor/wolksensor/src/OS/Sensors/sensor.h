@@ -1,5 +1,5 @@
-#ifndef SENSOR_CC3000_H_
-#define SENSOR_CC3000_H_
+#ifndef SENSOR_H_
+#define SENSOR_H_
 
 #include <stdbool.h>
 #include <avr/io.h>

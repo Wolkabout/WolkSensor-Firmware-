@@ -748,7 +748,7 @@ static bool state_disconnected(state_machine_state_t* state, event_t* event)
 		{
 			LOG(1, "Wifi send in disconnected state");
 			
-			if(*wifi_ssid != 0 && *wifi_password != 0)
+			if((*wifi_ssid != 0 && *wifi_password != 0) || (*wifi_ssid != 0 && *wifi_password == 0))
 			{
 				add_wifi_communication_module_event_type(EVENT_WIFI_SEND);
 				transition(STATE_WIFI_CONNECTING);
@@ -765,8 +765,8 @@ static bool state_disconnected(state_machine_state_t* state, event_t* event)
 		case EVENT_WIFI_SEND_TO:
 		{
 			LOG(1, "Wifi send to in disconnected state");
-			
-			if(*wifi_ssid != 0 && *wifi_password != 0)
+
+			if((*wifi_ssid != 0 && *wifi_password != 0) || (*wifi_ssid != 0 && *wifi_password == 0))
 			{
 				add_wifi_communication_module_event_type(EVENT_WIFI_SEND_TO);
 				transition(STATE_WIFI_CONNECTING);
@@ -783,8 +783,8 @@ static bool state_disconnected(state_machine_state_t* state, event_t* event)
 		case EVENT_WIFI_RECEIVE:
 		{
 			LOG(1, "Wifi receive in disconnected state");
-			
-			if(*wifi_ssid != 0 && *wifi_password != 0)
+
+			if((*wifi_ssid != 0 && *wifi_password != 0) || (*wifi_ssid != 0 && *wifi_password == 0))
 			{
 				add_wifi_communication_module_event_type(EVENT_WIFI_RECEIVE);
 				transition(STATE_WIFI_CONNECTING);
@@ -801,8 +801,8 @@ static bool state_disconnected(state_machine_state_t* state, event_t* event)
 		case EVENT_WIFI_RECEIVE_FROM:
 		{
 			LOG(1, "Wifi receive from in disconnected state");
-			
-			if(*wifi_ssid != 0 && *wifi_password != 0)
+
+			if((*wifi_ssid != 0 && *wifi_password != 0) || (*wifi_ssid != 0 && *wifi_password == 0))
 			{
 				add_wifi_communication_module_event_type(EVENT_WIFI_RECEIVE_FROM);
 				transition(STATE_WIFI_CONNECTING);

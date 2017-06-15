@@ -163,8 +163,8 @@ void mqtt_protocol_init(void)
 	load_device_id();
 	load_device_preshared_key();
 	load_location_status();
-	load_mqtt_username();
-	load_mqtt_password();
+	//load_mqtt_username();
+	//load_mqtt_password();
 	
 	/* init state machine */
 	mqtt_communication_protocol_state_machine.id = -1;

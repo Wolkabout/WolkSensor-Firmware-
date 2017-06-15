@@ -4,6 +4,15 @@
 #include "platform_specific.h"
 #include "state_machine.h"
 
+
+#define EVENTS_BUFFER_SIZE 10
+#define COMMANDS_BUFFER_SIZE 10
+#define COMMAND_STRING_BUFFER_SIZE MAX_BUFFER_SIZE
+#define COMMAND_RESPONSE_BUFFER_SIZE MAX_BUFFER_SIZE
+#define MAX_ALARM_RETRIES 2
+#define MAX_NO_CONNECTION_HEARTBEAT	60
+#define COMMUNICATION_MODULE_MINIMUM_REQUIRED_VOLTAGE 280
+
 #ifdef __cplusplus
 extern "C"
 {

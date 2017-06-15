@@ -169,9 +169,9 @@ bool waiting_movement_sensor_enable_timeout(void)
 }
 
 
-void disable_movement(void)
+bool disable_movement(void)
 {
-	bool  timeout=false;
+	bool timeout=false;
 	
 	start_auxTimeout(10);
 	while ((sensor_twi.status != TWIM_STATUS_READY) && !timeout) {timeout=read_auxTimeout();}
@@ -181,11 +181,13 @@ void disable_movement(void)
 	twi_buff[0] = 0x80 + 0x20;
 	twi_buff[1] = 0b00000000;	
 	TWI_MasterWriteRead(&sensor_twi, 0x19, twi_buff, 2, 0);
+
+	return true;
 }
 
-void enable_movement(void)
+bool enable_movement(void)
 {
-	bool  timeout=false;
+	bool timeout=false;
 	
 	start_auxTimeout(10);
 	while ((sensor_twi.status != TWIM_STATUS_READY) && !timeout) {timeout=read_auxTimeout();}
@@ -195,4 +197,6 @@ void enable_movement(void)
 	twi_buff[0] = 0x80 + 0x20;
 	twi_buff[1] = 0b01010111;	
 	TWI_MasterWriteRead(&sensor_twi, 0x19, twi_buff, 2, 0);
+
+	return true;
 }

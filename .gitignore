@@ -6,6 +6,7 @@
 *.o
 *.d
 *.hex
+*.pyc
 *.bin
 *.elf
 *.eep

@@ -1,6 +1,8 @@
 #include "command_parser.h"
 #include "commands.h"
 #include "logger.h"
+#include "util_conversions.h"
+#include "inet.h"
 
 typedef struct
 {
@@ -36,13 +38,13 @@ static const command_table_t command_table[] PROGMEM =
 	{ COMMAND_STATIC_DNS, "STATIC_DNS" },
 	{ COMMAND_ALARM, "ALARM" },
 	{ COMMAND_SET, "SET" },
-	{ COMMAND_KNX_PHYSICAL_ADDRESS, "KNX_PHYSICAL_ADDRESS" },
-	{ COMMAND_KNX_GROUP_ADDRESS, "KNX_GROUP_ADDRESS" },
-	{ COMMAND_KNX_MULTICAST_ADDRESS, "KNX_MULTICAST_ADDRESS" },
-	{ COMMAND_KNX_MULTICAST_PORT, "KNX_MULTICAST_PORT" },
-	{ COMMAND_KNX_NAT, "KNX_NAT" },
 	{ COMMAND_LOCATION, "LOCATION" },
-	{ COMMAND_SSL, "SSL" }
+	{ COMMAND_SSL, "SSL" },
+	{ COMMAND_TEMP_OFFSET, "TEMP_OFFSET" },
+	{ COMMAND_HUMIDITY_OFFSET, "HUMIDITY_OFFSET" },
+	{ COMMAND_PRESSURE_OFFSET, "PRESSURE_OFFSET" },
+	{ COMMAND_OFFSET_FACTORY, "OFFSET_FACTORY" },
+	{ COMMAND_ACQUISITION, "ACQUISITION" }
 };
 
 /*
@@ -226,59 +228,13 @@ static bool parse_set_argument(command_t* command, char* argument)
 	}
 }
 
-static bool parse_knx_physical_address_argument(command_t* command, unsigned char* argument)
+static bool parse_numeric_argument(command_t* command, char* argument)
 {
-	char* address_segments[3];
-	
-	uint8_t i;
-	for(i = 0; i < 3; i++)
-	{
-		address_segments[i] = strtok((i == 0 ? argument : NULL), ".");
-		if(address_segments[i] == NULL)
-		{
-			return false;
-		}
-	}
-	
-	memset(&command->argument.knx_address_argument, 0, sizeof(command->argument.knx_address_argument));
-	
-	uint8_t address_segment = atoi(address_segments[0]);
-	command->argument.knx_address_argument[0] = address_segment << 4;
+	if (strlen(argument)>MAX_INT_LENGTH || !is_string_numeric(argument))
+		return false;
 
-	address_segment = atoi(address_segments[1]);
-	command->argument.knx_address_argument[0] |= (address_segment & 0x0F);
-	
-	address_segment = atoi(address_segments[2]);
-	command->argument.knx_address_argument[1] = address_segment;
-	
-	return true;
-}
-
-static bool parse_knx_group_address_argument(command_t* command, unsigned char* argument)
-{
-	char* address_segments[3];
-	
-	uint8_t i;
-	for(i = 0; i < 3; i++)
-	{
-		address_segments[i] = strtok((i == 0 ? argument : NULL), ".");
-		if(address_segments[i] == NULL)
-		{
-			return false;
-		}
-	}
-	
-	memset(&command->argument.knx_address_argument, 0, sizeof(command->argument.knx_address_argument));
-	
-	uint8_t address_segment = atoi(address_segments[0]);
-	command->argument.knx_address_argument[0] = address_segment << 3;
-	
-	address_segment = atoi(address_segments[1]);
-	command->argument.knx_address_argument[0] |= (address_segment & 0x07);
-	
-	address_segment = atoi(address_segments[2]);
-	command->argument.knx_address_argument[1] = atoi(address_segments[2]);
-	
+	uint32_t value = strtoul(argument, NULL, 10);
+	command->argument.uint32_argument = value;
 	return true;
 }
 
@@ -287,7 +243,6 @@ static bool parse_commad_argument(command_t* command, char* argument)
 	switch (command->type) {
 		case COMMAND_MOVEMENT:
 		case COMMAND_ATMO:
-		case COMMAND_KNX_NAT:
 		case COMMAND_LOCATION:
 		case COMMAND_SSL:
 		{
@@ -308,29 +263,39 @@ static bool parse_commad_argument(command_t* command, char* argument)
 		}
 		case COMMAND_HEARTBEAT:
 		case COMMAND_PORT:
-		case COMMAND_KNX_MULTICAST_PORT:
+		case COMMAND_TEMP_OFFSET:
+		case COMMAND_HUMIDITY_OFFSET:
+		case COMMAND_PRESSURE_OFFSET:
 		{
-			uint64_t value = atoi(argument);
-			command->argument.uint32_argument = value;
-			return true;
+			return parse_numeric_argument(command, argument);
 		}
 		case COMMAND_RTC:
 		{
+			if (!is_string_numeric(argument) || strchr(argument, '-') != NULL || strlen(argument)>10)
+				return false;
+
 			uint64_t rtc = strtoul(argument, NULL, 10);
 			command->argument.uint32_argument = rtc;
 			return true;
 		}
 		case COMMAND_ID:
 		case COMMAND_SIGNATURE:
-		case COMMAND_URL:
 		case COMMAND_SSID:
 		case COMMAND_PASS:
-		case COMMAND_STATIC_IP:
+		case COMMAND_OFFSET_FACTORY:
+		{
+			strncpy(command->argument.string_argument, argument, COMMAND_ARGUMENT_MAX_LENGTH);
+			return true;
+		}
+		case COMMAND_URL:
 		case COMMAND_STATIC_MASK:
 		case COMMAND_STATIC_GATEWAY:
 		case COMMAND_STATIC_DNS:
-		case COMMAND_KNX_MULTICAST_ADDRESS:
+		case COMMAND_STATIC_IP:
 		{
+			if(!inet_pton_ipv4(argument, NULL) && 0!=strcmp_P(argument, PSTR("OFF")))
+			return false;
+
 			strncpy(command->argument.string_argument, argument, COMMAND_ARGUMENT_MAX_LENGTH);
 			return true;
 		}
@@ -344,6 +309,11 @@ static bool parse_commad_argument(command_t* command, char* argument)
 			else if(!strcmp_P(argument, PSTR("WEP")))
 			{
 				command->argument.uint32_argument = WIFI_SECURITY_WEP;
+				return true;
+			}
+			else if(!strcmp_P(argument, PSTR("WPA")))
+			{
+				command->argument.uint32_argument = WIFI_SECURITY_WPA;
 				return true;
 			}
 			else if(!strcmp_P(argument, PSTR("WPA2")))
@@ -376,14 +346,6 @@ static bool parse_commad_argument(command_t* command, char* argument)
 		case COMMAND_SET:
 		{
 			return parse_set_argument(command, argument);
-		}
-		case COMMAND_KNX_PHYSICAL_ADDRESS:
-		{
-			return parse_knx_physical_address_argument(command, argument);
-		}
-		case COMMAND_KNX_GROUP_ADDRESS:
-		{
-			return parse_knx_group_address_argument(command, argument);
 		}
 		default:
 		{
@@ -451,7 +413,7 @@ static bool parse_command(char* command_string, uint16_t command_string_length, 
 		}
 	}
 	
-	LOG(1, "Command could not be parsed or is not reckognized");
+	LOG(1, "Command could not be parsed or is not recognized");
 	return false;
 }
 

@@ -20,6 +20,7 @@ wifi_network_t;
 typedef struct
 {
 	void (*exchange_data)(void);
+	void (*acquisition)(void);
 	void (*reset)(void);
 	void (*start_heartbeat)(uint16_t heartbeat);
 	void (*get_application_status)(char* status, uint16_t status_length);
