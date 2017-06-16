@@ -17,13 +17,6 @@
 #include "global_dependencies.h"
 #include "sensors.h"
 
-#define EVENTS_BUFFER_SIZE 10
-#define COMMANDS_BUFFER_SIZE 10
-#define COMMAND_STRING_BUFFER_SIZE MAX_BUFFER_SIZE
-#define COMMAND_RESPONSE_BUFFER_SIZE MAX_BUFFER_SIZE
-#define MAX_ALARM_RETRIES 2
-#define MAX_NO_CONNECTION_HEARTBEAT	60
-#define COMMUNICATION_MODULE_MINIMUM_REQUIRED_VOLTAGE 280
 
 typedef enum
 {
@@ -213,6 +206,11 @@ static void exchange_data(void)
 	add_event_type(&events_buffer, EVENT_HEARTBEAT);
 }
 
+static void acquisition(void)
+{
+	add_event_type(&events_buffer, EVENT_ACQUIRE);
+}
+
 static void reset(void)
 {
 	add_event_type(&events_buffer, EVENT_RESET);
@@ -326,6 +324,7 @@ void init_wolksensor(start_type_t start_type)
 	
 	// plug into commands
 	commands_dependencies.exchange_data  = exchange_data;
+	commands_dependencies.acquisition = acquisition;
 	commands_dependencies.reset = reset;
 	commands_dependencies.start_heartbeat = start_heartbeat;
 	commands_dependencies.get_application_status = get_status;
@@ -333,6 +332,9 @@ void init_wolksensor(start_type_t start_type)
 	// parameters
 	load_system_heartbeat();
 	load_atmo_status();
+
+	load_offset_status();
+	load_offset_factory_status();
 	
 	load_movement_status();
 	// for movement sensor set predefined alarm

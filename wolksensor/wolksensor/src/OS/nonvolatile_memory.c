@@ -7,6 +7,8 @@
 // OS
 #include "brd.h"
 #include "nonvolatile_memory.h"
+#include "logger.h"
+#include "config.h"
 
 #define CFG_EMPTY	255
 
@@ -92,18 +94,58 @@ bool config_write_eeprom(void *data, uint8_t type, uint8_t version, uint8_t leng
 
 bool config_read(void *data, uint8_t type, uint8_t version, uint8_t length)
 {
+	char tmp_string[EEPROM_PAGE_SIZE];
+
 	switch(type)
 	{
-		//case CFG_MQTT_ID:
-		//{
-		//	ReadUserSignature(data, (void *)offsetof(NVM_USER_SIGNATURES_t, MQTTID), length);
-		//	return (*(uint8_t *)data) != 0xff;
-		//}
-		//case CFG_MQTT_PRESHARED_KEY:
-		//{
-		//	ReadUserSignature(data, (void *)offsetof(NVM_USER_SIGNATURES_t, MQTTPSK), length);
-		//	return (*(uint8_t *)data) != 0xff;
-		//}
+		case CFG_WIFI_SSID:
+		{
+			if(!config_read_eeprom(tmp_string, type, version, (EEPROM_PAGE_SIZE - 2)))
+				return false;
+			LOG_PRINT(1, PSTR("Read first page from EEPROM: %s | len: %d\n\r"), tmp_string, strlen(tmp_string));
+
+			memset(data, 0, sizeof(data));
+			strncpy(data, tmp_string, (EEPROM_PAGE_SIZE - 2));
+			memset(tmp_string, 0, sizeof(tmp_string));
+
+			if(!config_read_eeprom(tmp_string, CFG_WIFI_SSID_SEC, version, (EEPROM_PAGE_SIZE - 2)))
+			{
+				LOG(1, "Unable to read from CFG_WIFI_SSID_SEC");
+				//return false;
+			}
+			LOG_PRINT(1, PSTR("Read second page from EEPROM: %s | len: %d\n\r"), tmp_string, strlen(tmp_string));
+
+			strcat(data, tmp_string);
+			return true;
+		}
+		case CFG_WIFI_PASS:
+		{
+			memset(data, 0, sizeof(data));
+			if(!config_read_eeprom(tmp_string, type, version, (EEPROM_PAGE_SIZE - 2)))
+				return false;
+			LOG_PRINT(1, PSTR("Read first page from EEPROM: %s | len: %d\n\r"), tmp_string, strlen(tmp_string));
+			strncpy(data, tmp_string, (EEPROM_PAGE_SIZE - 2));
+
+			memset(tmp_string, 0, sizeof(tmp_string));
+			if(!config_read_eeprom(tmp_string, CFG_WIFI_PASS_SEC, version, (EEPROM_PAGE_SIZE - 2)))
+			{
+				LOG(1, "Unable to read from CFG_WIFI_PASS_SEC");
+				//return false;
+			}
+			LOG_PRINT(1, PSTR("Read second page from EEPROM: %s | len: %d\n\r"), tmp_string, strlen(tmp_string));
+			strcat(data, tmp_string);
+
+			memset(tmp_string, 0, sizeof(tmp_string));
+			if(!config_read_eeprom(tmp_string, CFG_WIFI_PASS_THIRD, version, 3))
+			{
+				LOG(1, "Unable to read from CFG_WIFI_PASS_THIRD");
+				//return false;
+			}
+			LOG_PRINT(1, PSTR("Read third page from EEPROM: %s | len: %d\n\r"), tmp_string, strlen(tmp_string));
+
+			strcat(data, tmp_string);
+			return true;
+		}
 		default:
 		{
 			return config_read_eeprom(data, type, version, length);
@@ -113,18 +155,53 @@ bool config_read(void *data, uint8_t type, uint8_t version, uint8_t length)
 
 bool config_write(void *data, uint8_t type, uint8_t version, uint8_t length)
 {
+	char tmp_string[EEPROM_PAGE_SIZE];
+
 	switch(type)
 	{
-		//case CFG_MQTT_ID:
-		//{
-		//	BootloaderAPI_WriteUserSignature(offsetof(NVM_USER_SIGNATURES_t, MQTTID), data, length);
-		//	return true;
-		//}
-		//case CFG_MQTT_PRESHARED_KEY:
-		//{
-		//	BootloaderAPI_WriteUserSignature(offsetof(NVM_USER_SIGNATURES_t, MQTTPSK), data, length);
-		//	return true;
-		//}
+		case CFG_WIFI_SSID:
+		{
+			if(length > (EEPROM_PAGE_SIZE - 2))
+			{
+				strncpy(tmp_string, data, (EEPROM_PAGE_SIZE - 2));
+				if (!config_write_eeprom(tmp_string, type, version, (EEPROM_PAGE_SIZE - 2)))
+					return false;
+
+				data += (EEPROM_PAGE_SIZE - 2);
+				memset(tmp_string, 0, sizeof(tmp_string));
+				strncpy(tmp_string, data, (length - (EEPROM_PAGE_SIZE - 2)));
+				return config_write_eeprom(tmp_string, CFG_WIFI_SSID_SEC, version, (length - (EEPROM_PAGE_SIZE - 2)));
+			}
+			else
+			{
+				return config_write_eeprom(data, type, version, length);
+			}
+		}
+		case CFG_WIFI_PASS:
+		{
+			if(length > (EEPROM_PAGE_SIZE - 2))
+			{
+				memset(tmp_string, 0, sizeof(tmp_string));
+				strncpy(tmp_string, data, (EEPROM_PAGE_SIZE - 2));
+				if (!config_write_eeprom(tmp_string, type, version, (EEPROM_PAGE_SIZE - 2)))
+					return false;
+
+				data += (EEPROM_PAGE_SIZE - 2);
+				memset(tmp_string, 0, sizeof(tmp_string));
+				strncpy(tmp_string, data, (EEPROM_PAGE_SIZE - 2));
+				if (!config_write_eeprom(tmp_string, CFG_WIFI_PASS_SEC, version, (EEPROM_PAGE_SIZE - 2)))
+					return false;
+
+				data += (EEPROM_PAGE_SIZE - 2);
+				memset(tmp_string, 0, sizeof(tmp_string));
+				strncpy(tmp_string, data, (length - 2*(EEPROM_PAGE_SIZE - 2)));
+				return config_write_eeprom(tmp_string, CFG_WIFI_PASS_THIRD, version, (length - 2*(EEPROM_PAGE_SIZE - 2)));
+			}
+			else
+			{
+				return config_write_eeprom(data, type, version, length);
+			}
+		}
 		default:
 		{
 			return config_write_eeprom(data, type, version, length);

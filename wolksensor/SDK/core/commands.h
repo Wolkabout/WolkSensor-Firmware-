@@ -7,6 +7,7 @@
 #include "sensors.h"
 #include "actuators.h"
 
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -21,8 +22,10 @@ extern "C"
 #define ARGUMENT_ITEM_KEY_VALUE_SEPARATOR ':'
 #define ARGUMENT_ITEM_VALUES_SEPARATOR ','
 
-#define COMMAND_ARGUMENT_MAX_LENGTH 32
+#define COMMAND_ARGUMENT_MAX_LENGTH 64
 #define COMMAND_MAX_LENGTH (COMMAND_NAME_MAX_LENGTH + COMMAND_ARGUMENT_MAX_LENGTH + 2) /* ' ' + ';' */
+
+#define MAX_INT_LENGTH 5
 
 typedef enum
 {
@@ -51,14 +54,14 @@ typedef enum
 	COMMAND_STATIC_DNS,
 	COMMAND_ALARM,
 	COMMAND_SET,
-	COMMAND_KNX_PHYSICAL_ADDRESS,
-	COMMAND_KNX_GROUP_ADDRESS,
-	COMMAND_KNX_MULTICAST_ADDRESS,
-	COMMAND_KNX_MULTICAST_PORT,
-	COMMAND_KNX_NAT,
 	COMMAND_LOCATION,
 	COMMAND_SSL,
-	COMMAND_MQTT_USERNAME
+	COMMAND_MQTT_USERNAME,
+	COMMAND_TEMP_OFFSET,
+	COMMAND_HUMIDITY_OFFSET,
+	COMMAND_PRESSURE_OFFSET,
+	COMMAND_OFFSET_FACTORY,
+	COMMAND_ACQUISITION
 }
 commands_t;
 
@@ -77,9 +80,7 @@ typedef union
 	bool bool_argument;
 	sensor_alarms_t sensors_alarms_argument[NUMBER_OF_SENSORS];
 	set_argument_t set_argument;
-	uint8_t knx_address_argument[2];
 }
-
 command_argument_t;
 
 typedef struct
@@ -131,15 +132,15 @@ command_execution_result_t cmd_static_gateway(command_t* command, circular_buffe
 command_execution_result_t cmd_static_dns(command_t* command, circular_buffer_t* response_buffer);
 command_execution_result_t cmd_alarm(command_t* command, circular_buffer_t* response_buffer);
 command_execution_result_t cmd_set(command_t* command, circular_buffer_t* response_buffer);
-command_execution_result_t cmd_knx_physical_address(command_t* command, circular_buffer_t* response_buffer);
-command_execution_result_t cmd_knx_group_address(command_t* command, circular_buffer_t* response_buffer);
-command_execution_result_t cmd_multicast_address(command_t* command, circular_buffer_t* response_buffer);
-command_execution_result_t cmd_multicast_port(command_t* command, circular_buffer_t* response_buffer);
-command_execution_result_t cmd_knx_nat(command_t* command, circular_buffer_t* response_buffer);
 command_execution_result_t cmd_location(command_t* command, circular_buffer_t* response_buffer);
 command_execution_result_t cmd_ssl(command_t* command, circular_buffer_t* response_buffer);
 command_execution_result_t cmd_mqtt_username(command_t* command, circular_buffer_t* response_buffer);
 command_execution_result_t cmd_mqtt_password(command_t* command, circular_buffer_t* response_buffer);
+command_execution_result_t cmd_temp_offset(command_t* command, circular_buffer_t* response_buffer);
+command_execution_result_t cmd_humidity_offset(command_t* command, circular_buffer_t* response_buffer);
+command_execution_result_t cmd_pressure_offset(command_t* command, circular_buffer_t* response_buffer);
+command_execution_result_t cmd_acquisition(command_t* command, circular_buffer_t* response_buffer);
+command_execution_result_t cmd_offset_factory(command_t* command, circular_buffer_t* response_buffer);
 
 #ifdef __cplusplus
 }

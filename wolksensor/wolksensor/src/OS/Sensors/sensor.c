@@ -11,6 +11,7 @@
 #include "sensors.h"
 #include "Sensors/batteryADC.h"
 #include "Sensors/BME280.h"
+#include "Sensors/BME280_Defs.h"
 #include "Sensors/LSM303.h"
 #include "config.h"
 #include "event_buffer.h"
@@ -28,7 +29,7 @@ ISR(TWIC_TWIM_vect) {
 void init_sensors(void)
 {
 	LOG(1, "Sensors init");
-		
+
 	register8_t saved_sreg = SREG;
 	cli();
 
@@ -46,21 +47,42 @@ void init_sensors(void)
 static bool get_pressure(int16_t *value)
 {	
 	*value = BME280_GetPressure()*10;
-		
+	*value += atmo_offset[1];
+
+	if( (*value > PRESSURE_OPERATING_RANGE_MAX) || (*value < PRESSURE_OPERATING_RANGE_MIN) )
+	{
+		LOG(1, "Pressure measurement is out of operating range");
+		return false;
+	}
+
 	return true;
 }
 
 static bool get_temperature(int16_t *value)
-{	
+{
 	*value = BME280_GetTemperature()*10;
-	
+	*value += atmo_offset[0];
+
+	if( (*value > TEMPERATURE_OPERATING_RANGE_MAX) || (*value < TEMPERATURE_OPERATING_RANGE_MIN) )
+	{
+		LOG(1, "Temperature measurement is out of operating range");
+		return false;
+	}
+
 	return true;
 }
 
 static bool get_humidity(int16_t *value)
 {
 	*value = BME280_GetHumidity()*10;
-	
+	*value += atmo_offset[2];
+
+	if( (*value > HUMIDITY_OPERATING_RANGE_MAX) || (*value < HUMIDITY_OPERATING_RANGE_MIN) )
+	{
+		LOG(1, "Humidity measurement is out of operating range");
+		return false;
+	}
+
 	return true;
 }
 
@@ -70,7 +92,11 @@ bool get_sensors_states(char* sensors_ids, uint8_t sensors_count)
 	
 	sensor_twi.interface->MASTER.BAUD = TWI_MasterBaud(CLK_24MHZ);
 
-	BME280_poll();
+	if(!BME280_poll())
+	{
+		LOG(1, "ERROR to poll BME280");
+		return false;
+	}
 	
 	while (sensor_twi.status != TWIM_STATUS_READY) {}
 		
@@ -120,5 +146,11 @@ bool get_sensors_states(char* sensors_ids, uint8_t sensors_count)
 	
 	if(sensors_states_listener) sensors_states_listener(atmo_sensors_states, sensors_count);
 	
+	if(!BME280_SetOversamplingMode(BME280_SLEEP_MODE))
+	{
+		LOG(1, "Put BME280 into Sleep mode False");
+		return false;
+	}
+
 	return true;
 }

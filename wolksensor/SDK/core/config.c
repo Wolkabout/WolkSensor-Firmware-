@@ -8,8 +8,8 @@ char device_id[MAX_DEVICE_ID_SIZE];
 
 uint16_t system_heartbeat = DEFAULT_SYSTEM_HEARTBEAT;
 
-char wifi_ssid[MAX_WIFI_SSID_SIZE];
-char wifi_password[MAX_WIFI_PASSWORD_SIZE];
+char wifi_ssid[MAX_WIFI_SSID_SIZE + 1];
+char wifi_password[MAX_WIFI_PASSWORD_SIZE + 1];
 uint8_t wifi_auth_type = WIFI_SECURITY_UNSECURED;
 
 char wifi_static_ip[MAX_WIFI_STATIC_IP_SIZE];
@@ -27,18 +27,13 @@ uint16_t server_port = 8883;
 bool movement_status = false;
 bool atmo_status = true;
 
-uint8_t knx_physical_address[2] = {0, 0};
-uint8_t knx_group_address[2] = {0, 0};
-	
-char knx_multicast_address[MAX_KNX_MULTICAST_ADDRESS_SIZE];
-uint16_t knx_multicast_port;
-
-bool knx_nat = false;
-
 bool location = false;
 
 char mqtt_username[MQTT_USERNAME_SIZE];
 char mqtt_password[MQTT_PASSWORD_SIZE];
+
+uint32_t atmo_offset[3];
+uint32_t atmo_offset_factory[5];
 
 bool load_device_id(void)
 {
@@ -153,7 +148,7 @@ bool load_wifi_static_gateway(void)
 		return true;
 	}
 
-	LOG(1, "Unable to read static gateway");
+	LOG(1, "Unable to read static GATEWAY");
 	memset(wifi_static_gateway, 0, sizeof(wifi_static_gateway));
 	return false;
 }
@@ -250,76 +245,6 @@ bool load_atmo_status(void)
 	return false;
 }
 
-bool load_knx_physical_address(void)
-{
-	if (global_dependencies.config_read(&knx_physical_address, CFG_KNX_PHYSICAL_ADDRESS, 1, sizeof(knx_physical_address)))
-	{
-		LOG_PRINT(1, PSTR("KNX physical address read: %02x%02x\r\n"), knx_physical_address[0], knx_physical_address[1]);
-		return true;
-	}
-	
-	LOG(1, "Unable to read KNX physical address");
-	memset(knx_physical_address, 0, 2);
-	return false;
-}
-
-bool load_knx_group_address(void)
-{
-	if (global_dependencies.config_read(&knx_group_address, CFG_KNX_GROUP_ADDRESS, 1, sizeof(knx_group_address)))
-	{
-		LOG_PRINT(1, PSTR("KNX group address read: %02x%02x\r\n"), knx_group_address[0], knx_group_address[1]);
-		return true;
-	}
-	
-	LOG(1, "Unable to read KNX group address");
-	memset(knx_group_address, 0, 2);
-	return false;
-}
-
-bool load_knx_multicast_address(void)
-{
-	if (global_dependencies.config_read(&knx_multicast_address, CFG_KNX_MULTICAST_ADDRESS, 1, sizeof(knx_multicast_address)))
-	{
-		LOG_PRINT(1, PSTR("KNX multicast address was read: %s\r\n"), knx_multicast_address);
-		
-		return true;
-	}
-
-	LOG(1, "Unable to read KNX multicast address");
-	memset(knx_multicast_address, 0, sizeof(knx_multicast_address));
-	
-	return false;
-}
-
-bool load_knx_multicast_port(void)
-{
-	if (global_dependencies.config_read(&knx_multicast_port, CFG_KNX_MULTICAST_PORT, 1, sizeof(knx_multicast_port)))
-	{
-		LOG_PRINT(1, PSTR("KNX multicast port was read: %u\r\n"), knx_multicast_port);
-		return true;
-	}
-	
-	LOG(1, "Unable to read KNX multicast port");
-	knx_multicast_port = 0;
-	
-	return false;
-}
-
-bool load_knx_nat(void)
-{
-	if (global_dependencies.config_read(&knx_nat, CFG_KNX_NAT, 1, sizeof(knx_nat)))
-	{
-		knx_nat = (knx_nat == 0) ? false : true;
-		LOG_PRINT(1, PSTR("Knx use nat read %u\r\n"), knx_nat);
-		return true;
-	}
-	
-	LOG(1, "Could not read knx nat status, defaulting to OFF");
-	knx_nat = false;
-	
-	return false;
-}
-
 bool load_location_status(void)
 {
 	if (global_dependencies.config_read(&location, CFG_LOCATION, 1, sizeof(location)))
@@ -373,5 +298,37 @@ bool load_mqtt_password(void)
 
 	LOG(1, "Unable to read mqtt password");
 	memset(mqtt_password, 0, sizeof(mqtt_password));
+	return false;
+}
+
+bool load_offset_status(void)
+{
+	if (global_dependencies.config_read(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
+	{
+		LOG_PRINT(1, PSTR("Temperature offset is written: %d \n\rPressure offset is written: %d \n\rHumidity offset is written: %d \n\r"), atmo_offset[0], atmo_offset[1], atmo_offset[2]);
+		return true;
+	}
+
+	LOG(1, "Could not read Temperature offset status, defaulting to 0 \n\rCould not read Pressure offset status, defaulting to 0 \n\rCould not read Humidity offset status, defaulting to 0");
+	atmo_offset[0] = 0;
+	atmo_offset[1] = 0;
+	atmo_offset[2] = 0;
+
+	return false;
+}
+
+bool load_offset_factory_status(void)
+{
+	if(global_dependencies.config_read(&atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
+	{
+		LOG_PRINT(1, PSTR("Temperature offset factory is written: %d \n\rPressure offset factory is written: %d \n\rHumidity offset factory is written: %d \n\r"), atmo_offset_factory[0], atmo_offset_factory[1], atmo_offset_factory[2]);
+		return true;
+	}
+
+	LOG(1, "Could not read Temperature offset factory status, defaulting to 0 \n\rCould not read Pressure offset factory status, defaulting to 0 \n\rCould not read Humidity offset factory status, defaulting to 0");
+	atmo_offset_factory[0] = 0;
+	atmo_offset_factory[1] = 0;
+	atmo_offset_factory[2] = 0;
+
 	return false;
 }

@@ -329,29 +329,39 @@
 #define BME280_TEMPERATURE_XLSB_REG_DATA__REG                       BME280_TEMPERATURE_XLSB_REG
 
 /******************************************************************************/
+/*  @brief OPERATING RANGE FOR TEMPERATURE, HUMIDITY AND PRESSURE */
+/******************************************************************************/
+#define TEMPERATURE_OPERATING_RANGE_MIN		-400
+#define TEMPERATURE_OPERATING_RANGE_MAX		850
+#define HUMIDITY_OPERATING_RANGE_MIN		0
+#define HUMIDITY_OPERATING_RANGE_MAX		1000
+#define PRESSURE_OPERATING_RANGE_MIN		3000
+#define PRESSURE_OPERATING_RANGE_MAX		11000
+
+/******************************************************************************/
 /*  @brief This structure holds all device specific calibration parameters */
 /******************************************************************************/
 typedef struct bme280_calibration_param_t {
-	unsigned int dig_T1;
-	int dig_T2;
-	int dig_T3;
+	uint16_t dig_T1;
+	uint16_t dig_T2;
+	uint16_t dig_T3;
 
-	unsigned int dig_P1;
-	int  dig_P2;
-	int dig_P3;
-	int dig_P4;
-	int dig_P5;
-	int dig_P6;
-	int dig_P7;
-	int dig_P8;
-	int dig_P9;
+	uint16_t dig_P1;
+	int16_t dig_P2;
+	int16_t dig_P3;
+	int16_t dig_P4;
+	int16_t dig_P5;
+	int16_t dig_P6;
+	int16_t dig_P7;
+	int16_t dig_P8;
+	int16_t dig_P9;
 
-	char dig_H1;
-	int dig_H2;
-	char dig_H3;
-	int dig_H4;
-	int dig_H5;
-	short dig_H6;
+	uint8_t dig_H1;
+	int16_t dig_H2;
+	uint8_t dig_H3;
+	int16_t dig_H4;
+	int16_t dig_H5;
+	int8_t dig_H6;
 	
 }bme280_calibration_param;
 

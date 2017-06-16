@@ -1,26 +1,26 @@
 #ifndef BME280_H_
 #define BME280_H_
 
-char BME280_GetID();
-void BME280_SoftReset();
-char BME280_GetStatus();
-void BME280_ReadData();
-char BME280_GetConfig();
-char BME280_GetCtrlMeasurement();
-char BME280_GetCtrlHumidity();
-void BME280_ReadCalibrationParams();
-void BME280_ReadMeasurements();
-void BME280_SetOversamplingPressure(char Value);
-void BME280_SetOversamplingTemperature(char Value);
-void BME280_SetOversamplingHumidity(char Value);
-void BME280_SetOversamplingMode(char Value);
+char BME280_GetID(void);
+void BME280_SoftReset(void);
+char BME280_GetStatus(void);
+void BME280_ReadData(void);
+char BME280_GetConfig(void);
+char BME280_GetCtrlMeasurement(void);
+char BME280_GetCtrlHumidity(void);
+void BME280_ReadCalibrationParams(void);
+bool BME280_ReadMeasurements(void);
+bool BME280_SetOversamplingPressure(char Value);
+bool BME280_SetOversamplingTemperature(char Value);
+bool BME280_SetOversamplingHumidity(char Value);
+bool BME280_SetOversamplingMode(char Value);
 void BME280_SetFilterCoefficient(char Value);
 void BME280_SetStandbyTime(char Value);
-char BME280_IsMeasuring();
-float BME280_GetTemperature();
-float BME280_GetHumidity();
-float BME280_GetPressure();
-bool BME280_init();
-void BME280_poll();
+char BME280_IsMeasuring(void);
+float BME280_GetTemperature(void);
+float BME280_GetHumidity(void);
+float BME280_GetPressure(void);
+bool BME280_init(void);
+bool BME280_poll(void);
 
-#endif /* BME280_H_ */`
+#endif /* BME280_H_ */

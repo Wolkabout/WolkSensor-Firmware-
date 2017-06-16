@@ -17,7 +17,7 @@ void LSM303_poll(void);
 
 bool waiting_movement_sensor_enable_timeout(void);
 
-void disable_movement(void);
-void enable_movement(void);
+bool disable_movement(void);
+bool enable_movement(void);
 
 #endif /* LSM303_H_ */

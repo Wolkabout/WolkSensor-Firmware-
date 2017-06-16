@@ -11,8 +11,10 @@ extern "C"
 #define MAX_PRESHARED_KEY_SIZE 30
 #define MAX_DEVICE_ID_SIZE 30
 
-#define MAX_WIFI_SSID_SIZE 30
-#define MAX_WIFI_PASSWORD_SIZE 30
+#define MAX_WIFI_SSID_SIZE 32
+#define MAX_WIFI_PASSWORD_SIZE 63
+#define MIN_WIFI_PASSWORD_SIZE_WEP 10
+#define MAX_WIFI_PASSWORD_SIZE_WEP 26
 
 #define MAX_WIFI_STATIC_IP_SIZE 30
 #define MAX_WIFI_STATIC_MASK_SIZE 30
@@ -27,6 +29,15 @@ extern "C"
 
 #define MQTT_USERNAME_SIZE 30
 #define MQTT_PASSWORD_SIZE 30
+
+#define MAX_PORT_NUMBER	65535
+
+#define TEMPERATURE_OFFSET_MIN	-20
+#define TEMPERATURE_OFFSET_MAX	37
+#define HUMIDITY_OFFSET_MIN		-30
+#define HUMIDITY_OFFSET_MAX		30
+#define PRESSURE_OFFSET_MIN		-100
+#define PRESSURE_OFFSET_MAX		100
 
 typedef enum
 {
@@ -68,7 +79,14 @@ typedef enum
 	
 	CFG_MQTT_USERNAME,
 	CFG_MQTT_PASSWORD,
-	
+
+	CFG_OFFSET,
+	CFG_OFFSET_FACTORY,
+
+	CFG_WIFI_SSID_SEC,
+	CFG_WIFI_PASS_SEC,
+	CFG_WIFI_PASS_THIRD,
+
 	CFG_EMPTY = 255
 }
 cfg_t;
@@ -78,8 +96,8 @@ extern char	device_id[MAX_DEVICE_ID_SIZE];
 
 extern uint16_t system_heartbeat;
 
-extern char wifi_ssid[MAX_WIFI_SSID_SIZE];
-extern char wifi_password[MAX_WIFI_PASSWORD_SIZE];
+extern char wifi_ssid[MAX_WIFI_SSID_SIZE + 1];
+extern char wifi_password[MAX_WIFI_PASSWORD_SIZE + 1];
 extern uint8_t wifi_auth_type;
 
 extern char wifi_static_ip[MAX_WIFI_STATIC_IP_SIZE];
@@ -109,6 +127,9 @@ extern bool location;
 
 extern char mqtt_username[MQTT_USERNAME_SIZE];
 extern char	mqtt_password[MQTT_PASSWORD_SIZE];
+
+extern uint32_t atmo_offset[3];
+extern uint32_t atmo_offset_factory[5];
 
 bool load_device_id(void);
 bool load_device_preshared_key(void);
@@ -144,6 +165,16 @@ bool load_ssl_status(void);
 
 bool load_mqtt_username(void);
 bool load_mqtt_password(void);
+/*
+bool load_temp_offset_status(void);
+bool load_humidity_offset_status(void);
+bool load_pressure_offset_status(void);
+
+bool load_temp_offset_factory_status(void);
+*/
+
+bool load_offset_status(void);
+bool load_offset_factory_status(void);
 
 #ifdef __cplusplus
 }

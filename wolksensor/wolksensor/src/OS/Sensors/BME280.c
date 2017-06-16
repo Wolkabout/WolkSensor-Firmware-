@@ -20,90 +20,93 @@
 #include "Sensors/BME280.h"
 #include "config/conf_os.h"
 
-char tmp_data[20];
+uint8_t tmp_data[20] = {0};
 bme280_calibration_param cal_param;
-long adc_t, adc_p, adc_h, t_fine;
+int32_t adc_t, adc_p, adc_h, t_fine;
 
 long Pressure;
 unsigned long Temperature;
 unsigned int Humidity;
 
 
-static void I2C_WriteRegister(char wrAddr, char wrData) {
+static char I2C_WriteRegister(char wrAddr, char wrData) {
 	tmp_data[0] = wrAddr;
 	tmp_data[1] = wrData;
-	bool  timeout=false;
-	
+	bool timeout=false;
+
 	TWI_MasterWriteRead(&sensor_twi, BME280_I2C_ADDRESS1, tmp_data, 2, 0);
 	start_auxTimeout(10);
 	while ((sensor_twi.status != TWIM_STATUS_READY) && !timeout) {timeout=read_auxTimeout();}
 	if(timeout || (sensor_twi.result != TWIM_RESULT_OK)) return false;
+
+	return true;
 }
 
 static char I2C_ReadRegister(char rAddr) {
 	tmp_data[0] = rAddr;
 	bool  timeout=false;
-	
+
 	TWI_MasterWriteRead(&sensor_twi, BME280_I2C_ADDRESS1, tmp_data, 1, 1);
-	
+
 	start_auxTimeout(10);
 	while ((sensor_twi.status != TWIM_STATUS_READY) && !timeout) {timeout=read_auxTimeout();}
 	if(timeout || (sensor_twi.result != TWIM_RESULT_OK)) return false;
-	
+
 	return sensor_twi.readData[0];
 }
 
 
-void BME280_ReadMeasurements() {
+bool BME280_ReadMeasurements(void) {
 	tmp_data[0] = BME280_PRESSURE_MSB_REG;
 	bool  timeout=false;
 
-	TWI_MasterWriteRead(&sensor_twi, BME280_I2C_ADDRESS1, tmp_data, 1, BME280_DATA_FRAME_SIZE);
+	if(!TWI_MasterWriteRead(&sensor_twi, BME280_I2C_ADDRESS1, tmp_data, 1, BME280_DATA_FRAME_SIZE)) return false;
 	start_auxTimeout(10);
 	while ((sensor_twi.status != TWIM_STATUS_READY) && !timeout) {timeout=read_auxTimeout();}
-	if(timeout || (sensor_twi.result != TWIM_RESULT_OK)) return;
+	if(timeout || (sensor_twi.result != TWIM_RESULT_OK)) return false;
 	
 	adc_h = sensor_twi.readData[BME280_DATA_FRAME_HUMIDITY_LSB_BYTE];
-	adc_h |= (unsigned long)sensor_twi.readData[BME280_DATA_FRAME_HUMIDITY_MSB_BYTE] << 8;
+	adc_h |= (uint16_t)sensor_twi.readData[BME280_DATA_FRAME_HUMIDITY_MSB_BYTE] << 8;
 
-	adc_t  = (unsigned long)sensor_twi.readData[BME280_DATA_FRAME_TEMPERATURE_XLSB_BYTE] >> 4;
-	adc_t |= (unsigned long)sensor_twi.readData[BME280_DATA_FRAME_TEMPERATURE_LSB_BYTE] << 4;
-	adc_t |= (unsigned long)sensor_twi.readData[BME280_DATA_FRAME_TEMPERATURE_MSB_BYTE] << 12;
+	adc_t  = (uint32_t)sensor_twi.readData[BME280_DATA_FRAME_TEMPERATURE_XLSB_BYTE] >> 4;
+	adc_t |= (uint32_t)sensor_twi.readData[BME280_DATA_FRAME_TEMPERATURE_LSB_BYTE] << 4;
+	adc_t |= (uint32_t)sensor_twi.readData[BME280_DATA_FRAME_TEMPERATURE_MSB_BYTE] << 12;
 
-	adc_p  = (unsigned long)sensor_twi.readData[BME280_DATA_FRAME_PRESSURE_XLSB_BYTE] >> 4;
-	adc_p |= (unsigned long)sensor_twi.readData[BME280_DATA_FRAME_PRESSURE_LSB_BYTE] << 4;
-	adc_p |= (unsigned long)sensor_twi.readData[BME280_DATA_FRAME_PRESSURE_MSB_BYTE] << 12;
+	adc_p  = (uint32_t)sensor_twi.readData[BME280_DATA_FRAME_PRESSURE_XLSB_BYTE] >> 4;
+	adc_p |= (uint32_t)sensor_twi.readData[BME280_DATA_FRAME_PRESSURE_LSB_BYTE] << 4;
+	adc_p |= (uint32_t)sensor_twi.readData[BME280_DATA_FRAME_PRESSURE_MSB_BYTE] << 12;
+
+	return true;
 }
 
 
-char BME280_GetID() {
+char BME280_GetID(void) {
 	return I2C_ReadRegister(BME280_CHIP_ID_REG);
 }
 
-void BME280_SoftReset() {
+void BME280_SoftReset(void) {
 	I2C_WriteRegister(BME280_RST_REG, BME280_SOFT_RESET);
 }
 
-char BME280_GetStatus() {
+char BME280_GetStatus(void) {
 	return I2C_ReadRegister(BME280_STAT_REG);
 }
 
-char BME280_GetCtrlMeasurement() {
+char BME280_GetCtrlMeasurement(void) {
 	return I2C_ReadRegister(BME280_CTRL_MEAS_REG);
 }
 
-char BME280_GetCtrlHumidity() {
+char BME280_GetCtrlHumidity(void) {
 	return I2C_ReadRegister(BME280_CTRL_HUMIDITY_REG);
 }
 
-char BME280_GetConfig() {
+char BME280_GetConfig(void) {
 	return I2C_ReadRegister(BME280_CONFIG_REG);
 }
 
 
-void BME280_ReadCalibrationParams() {
+void BME280_ReadCalibrationParams(void) {
 	char lsb, msb;
-	
 
 	msb = I2C_ReadRegister(BME280_TEMPERATURE_CALIB_DIG_T1_MSB_REG);
 	cal_param.dig_T1 = (unsigned int) msb;
@@ -202,35 +205,45 @@ void BME280_ReadCalibrationParams() {
 	cal_param.dig_H6 = (short) lsb;
 }
 
-void BME280_SetOversamplingPressure(char Value) {
+bool BME280_SetOversamplingPressure(char Value) {
 	char ctrlm;
+
 	ctrlm = BME280_GetCtrlMeasurement();
 	ctrlm &= ~BME280_CTRL_MEAS_REG_OVERSAMP_PRESSURE__MSK;
 	ctrlm |= Value << BME280_CTRL_MEAS_REG_OVERSAMP_PRESSURE__POS;
-	
-	I2C_WriteRegister(BME280_CTRL_MEAS_REG, ctrlm);
+
+	if(!I2C_WriteRegister(BME280_CTRL_MEAS_REG, ctrlm))	return false;
+
+	return true;
 }
 
-void BME280_SetOversamplingTemperature(char Value) {
+bool BME280_SetOversamplingTemperature(char Value) {
 	char ctrlm;
+
 	ctrlm = BME280_GetCtrlMeasurement();
 	ctrlm &= ~BME280_CTRL_MEAS_REG_OVERSAMP_TEMPERATURE__MSK;
 	ctrlm |= Value << BME280_CTRL_MEAS_REG_OVERSAMP_TEMPERATURE__POS;
 
-	I2C_WriteRegister(BME280_CTRL_MEAS_REG, ctrlm);
+	if(!I2C_WriteRegister(BME280_CTRL_MEAS_REG, ctrlm))	return false;
+
+	return true;
 }
 
-void BME280_SetOversamplingHumidity(char Value) {
+bool BME280_SetOversamplingHumidity(char Value) {
 
-	I2C_WriteRegister(BME280_CTRL_HUMIDITY_REG, Value );
+	if(!I2C_WriteRegister(BME280_CTRL_HUMIDITY_REG, Value )) return false;
+
+	return true;
 }
 
-void BME280_SetOversamplingMode(char Value) {
+bool BME280_SetOversamplingMode(char Value) {
 	char ctrlm;
 	ctrlm = BME280_GetCtrlMeasurement();
 	ctrlm |= Value;
 
-	I2C_WriteRegister(BME280_CTRL_MEAS_REG, ctrlm);
+	if(!I2C_WriteRegister(BME280_CTRL_MEAS_REG, ctrlm)) return false;
+
+	return true;
 }
 
 void BME280_SetFilterCoefficient(char Value) {
@@ -247,7 +260,7 @@ void BME280_SetStandbyTime(char Value) {
 	cfgv |= Value << BME280_CONFIG_REG_TSB__POS;
 }
 
-char BME280_IsMeasuring() {
+char BME280_IsMeasuring(void) {
 	char output;
 	output = BME280_GetStatus();
 	return (output & BME280_STAT_REG_MEASURING__MSK);
@@ -256,11 +269,11 @@ char BME280_IsMeasuring() {
 /****************************************************************************************************/
 /* Returns temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.  */
 /***************************************************************************************************/
-static long BME280_Compensate_T() {
-	long temp1, temp2, T;
+int32_t BME280_Compensate_T(void) {
+	int32_t temp1, temp2, T;
 
-	temp1 = ((((adc_t>>3) -((long)cal_param.dig_T1<<1))) * ((long)cal_param.dig_T2)) >> 11;
-	temp2 = (((((adc_t>>4) - ((long)cal_param.dig_T1)) * ((adc_t>>4) - ((long)cal_param.dig_T1))) >> 12) * ((long)cal_param.dig_T3)) >> 14;
+	temp1 = ((((adc_t>>3) -((int32_t)cal_param.dig_T1<<1))) * ((int32_t)cal_param.dig_T2)) >> 11;
+	temp2 = (((((adc_t>>4) - ((int32_t)cal_param.dig_T1)) * ((adc_t>>4) - ((int32_t)cal_param.dig_T1))) >> 12) * ((int32_t)cal_param.dig_T3)) >> 14;
 	t_fine = temp1 + temp2;
 	T = (t_fine * 5 + 128) >> 8;
 	return T;
@@ -270,82 +283,82 @@ static long BME280_Compensate_T() {
 /* Returns humidity in %RH as unsigned 32 bit integer in Q22.10 format (22 integer and 10 fractional bits). */
 /* Output value of “47445” represents 47445/1024 = 46.333 %RH */
 /************************************************************************************************************/
-static unsigned long BME280_Compensate_H() {
-	long h1;
-	h1 = (t_fine - ((long)76800));
-	h1 = (((((adc_h << 14) - (((long)cal_param.dig_H4) << 20) - (((long)cal_param.dig_H5) * h1)) +
-	((long)16384)) >> 15) * (((((((h1 * ((long)cal_param.dig_H6)) >> 10) * (((h1 *
-	((long)cal_param.dig_H3)) >> 11) + ((long)32768))) >> 10) + ((long)2097152)) *
-	((long)cal_param.dig_H2) + 8192) >> 14));
-	h1 = (h1 - (((((h1 >> 15) * (h1 >> 15)) >> 7) * ((long)cal_param.dig_H1)) >> 4));
-	h1 = (h1 < 0 ? 0 : h1);
-	h1 = (h1 > 419430400 ? 419430400 : h1);
-	return (unsigned long)(h1>>12);
+uint32_t BME280_Compensate_H(void) {
+	int32_t v_x1_u32r;
+
+	v_x1_u32r = (t_fine - ((int32_t)76800));
+	v_x1_u32r = (((((adc_h << 14) - (((int32_t)cal_param.dig_H4) << 20) - (((int32_t)cal_param.dig_H5) * v_x1_u32r)) +
+	((int32_t)16384)) >> 15) * (((((((v_x1_u32r * ((int32_t)cal_param.dig_H6)) >> 10) * (((v_x1_u32r *
+	((int32_t)cal_param.dig_H3)) >> 11) + ((int32_t)32768))) >> 10) + ((int32_t)2097152)) *
+	((int32_t)cal_param.dig_H2) + 8192) >> 14));
+	v_x1_u32r = (v_x1_u32r - (((((v_x1_u32r >> 15) * (v_x1_u32r >> 15)) >> 7) * ((int32_t)cal_param.dig_H1)) >> 4));
+	v_x1_u32r = (v_x1_u32r < 0 ? 0 : v_x1_u32r);
+	v_x1_u32r = (v_x1_u32r > 419430400 ? 419430400 : v_x1_u32r);
+
+	return (uint32_t)(v_x1_u32r>>12);
 }
 
 /***********************************************************************************************************/
 /* Returns pressure in Pa as unsigned 32 bit integer. Output value of “96386” equals 96386 Pa = 963.86 hPa */
 /***********************************************************************************************************/
 
-static unsigned long BME280_Compensate_P() {
-	long press1, press2;
-	unsigned long P;
+uint32_t BME280_Compensate_P(void) {
+	int64_t  var1, var2, p;
+
+	var1 = ((int64_t)t_fine) - 128000;
+	var2 = var1 * var1 * (int64_t)cal_param.dig_P6;
+	var2 = var2 + ((var1*(int64_t)cal_param.dig_P5)<<17);
+	var2 = var2 + (((int64_t)cal_param.dig_P4)<<35);
+	var1 = ((var1 * var1 * (int64_t)cal_param.dig_P3)>>8) + ((var1 * (int64_t)cal_param.dig_P2)<<12);
+	var1 = (((((int64_t)1)<<47) + var1)) * ((int64_t)cal_param.dig_P1)>>33;
+
+	if (var1 == 0)
+	return 0; 	//avoid exception caused by division by zero
+
+	p = 1048576 - adc_p;
+	p = (((p << 31) - var2) * 3125) / var1;
+	var1 = (((int64_t)cal_param.dig_P9) * (p>>13) * (p>>13)) >> 25;
+	var2 = (((int64_t)cal_param.dig_P8) * p) >> 19;
+	p = ((p + var1 + var2) >> 8) + (((int64_t)cal_param.dig_P7)<<4);
 	
-	press1 = (((long)t_fine)>>1) - (long)64000;
-	press2 = (((press1>>2) * (press1>>2)) >> 11 ) * ((long)cal_param.dig_P6);
-	press2 = press2 + ((press1*((long)cal_param.dig_P5))<<1);
-	press2 = (press2>>2)+(((long)cal_param.dig_P4)<<16);
-	press1 = (((cal_param.dig_P3 * (((press1>>2) * (press1>>2)) >> 13 )) >> 3) + ((((long)cal_param.dig_P2) * press1)>>1))>>18;
-	press1 =((((32768+press1))*((long)cal_param.dig_P1))>>15);
-	if (press1 == 0) {
-		return 0; // avoid exception caused by division by zero
-	}
-	P = (((unsigned long)(((long)1048576)-adc_p)-(press2>>12)))*3125;
-	if (P < 0x80000000) {
-		P = (P << 1) / ((unsigned long)press1);
-		} else {
-		P = (P / (unsigned long)press1) * 2;
-	}
-	press1 = (((long)cal_param.dig_P9) * ((long)(((P>>3) * (P>>3))>>13)))>>12;
-	press2 = (((long)(P>>2)) * ((long)cal_param.dig_P8))>>13;
-	P = (unsigned long)((long)P + ((press1 + press2 + cal_param.dig_P7) >> 4));
-	return P;
+	return (uint32_t)(p/256);
 }
 
 
-float BME280_GetTemperature() {
+float BME280_GetTemperature(void) {
 	return (float)BME280_Compensate_T() / 100;
 }
 
-float BME280_GetHumidity() {
+float BME280_GetHumidity(void) {
 	return (float)BME280_Compensate_H() / 1024;
 }
 
-float BME280_GetPressure() {
+float BME280_GetPressure(void) {
 	return (float) BME280_Compensate_P() / 100;
 }
 
 
-void BME280_poll()
+bool BME280_poll(void)
 {
-	BME280_SetOversamplingPressure(BME280_OVERSAMP_1X);                          // Pressure x16 oversampling
-	BME280_SetOversamplingTemperature(BME280_OVERSAMP_1X);                        // Temperature x2 oversampling
-	BME280_SetOversamplingHumidity(BME280_OVERSAMP_1X);                           // Humidity x1 oversampling
-	BME280_SetOversamplingMode(BME280_FORCED_MODE);
+	if(!BME280_SetOversamplingPressure(BME280_OVERSAMP_1X)) return false;
+	if(!BME280_SetOversamplingTemperature(BME280_OVERSAMP_1X)) return false;
+	if(!BME280_SetOversamplingHumidity(BME280_OVERSAMP_1X)) return false;
+	if(!BME280_SetOversamplingMode(BME280_FORCED_MODE)) return false;
 	_delay_ms(50);
 	
 	while(BME280_IsMeasuring());
 	BME280_ReadMeasurements();
+
+	return true;
 }
 
-bool BME280_init() {
-	char response, tmp;
+bool BME280_init(void) {
+	char tmp;
 	
 	tmp = BME280_GetID();
-	LOG_PRINT(1, PSTR("\n\r tmp: 0x%x"), tmp);
 	if (tmp != BME280_CHIP_ID)
 	{
-		LOG(1, "\n\rCHIP ERROR");
+		LOG(1, "\n\rCHIP BME280 ERROR");
 		return false;
 	}
 	

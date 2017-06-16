@@ -50,5 +50,9 @@ bool append_location_status(bool location_status, circular_buffer_t* response_bu
 bool append_ssl_status(bool ssl_status, circular_buffer_t* response_buffer);
 bool append_mqtt_username(char* id, circular_buffer_t* response_buffer);
 bool append_mqtt_password(char* password, circular_buffer_t* response_buffer);
+bool append_temp_offset(uint16_t offset, circular_buffer_t* message_buffer);
+bool append_humidity_offset(uint16_t offset, circular_buffer_t* message_buffer);
+bool append_pressure_offset(uint16_t offset, circular_buffer_t* message_buffer);
+bool append_offset_factory(char* offset_factory, circular_buffer_t* message_buffer);
 
 #endif /* PROTOCOL_H_ */
