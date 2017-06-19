@@ -13,7 +13,6 @@ v4.1.12
 * the same certificate for production and staging server
 v4.1.13
 * correct read from new EEPROM addresses for firmware transit for v3.01 to v4.1.xx
-* WolkSensor.bin - https://github.com/execom-eu/m2m/releases/tag/firmware_v4.1.13
 v4.1.14
 * resolve domain name
 * differ hostname and server IP
