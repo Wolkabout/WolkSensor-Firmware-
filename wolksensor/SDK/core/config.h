@@ -22,8 +22,7 @@ extern "C"
 #define MAX_WIFI_STATIC_DNS_SIZE 30
 
 #define MAX_SERVER_IP_SIZE 30
-
-#define MAX_KNX_MULTICAST_ADDRESS_SIZE 30
+#define MAX_HOSTNAME_SIZE 30
 
 #define DEFAULT_SYSTEM_HEARTBEAT 10
 
@@ -110,18 +109,12 @@ extern bool ssl;
 extern unsigned char mac_address_nwmem[6];
 
 extern char server_ip[MAX_SERVER_IP_SIZE];
+extern char host_name[MAX_HOSTNAME_SIZE];
+
 extern uint16_t server_port;
 
 extern bool movement_status;
 extern bool atmo_status;
-
-extern uint8_t knx_physical_address[2];
-extern uint8_t knx_group_address[2];
-
-extern char knx_multicast_address[MAX_KNX_MULTICAST_ADDRESS_SIZE];
-extern uint16_t knx_multicast_port;
-
-extern bool knx_nat;
 
 extern bool location;
 
@@ -150,14 +143,6 @@ bool load_server_port(void);
 
 bool load_movement_status(void);
 bool load_atmo_status(void);
-
-bool load_knx_physical_address(void);
-bool load_knx_group_address(void);
-
-bool load_knx_multicast_address(void);
-bool load_knx_multicast_port(void);
-
-bool load_knx_nat(void);
 
 bool load_location_status(void);
 

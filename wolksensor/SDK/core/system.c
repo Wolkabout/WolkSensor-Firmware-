@@ -1,14 +1,6 @@
 #include "system.h"
 #include "logger.h"
 
-void append_knx_communication_protocol_data(knx_communication_protocol_data_t* operation_data, knx_communication_protocol_data_t* total_data)
-{
-	if(total_data->error == 0)
-	{
-		total_data->error = operation_data->error;
-	}
-}
-
 void append_mqtt_communication_protocol_data(mqtt_communication_protocol_data_t* operation_data, mqtt_communication_protocol_data_t* total_data)
 {
 	if(total_data->error == 0)
@@ -28,11 +20,6 @@ void append_communication_protocol_type_data(communication_protocol_type_data_t*
 			append_mqtt_communication_protocol_data(&operation_data->data.mqtt_communication_protocol_data, &total_data->data.mqtt_communication_protocol_data);
 			break;
 		}
-		case COMMUNICATION_PROTOCOL_KNX:
-		{
-			append_knx_communication_protocol_data(&operation_data->data.knx_communication_protocol_data, &total_data->data.knx_communication_protocol_data);
-			break;
-		}
 		default:
 		{
 			break;
@@ -47,11 +34,6 @@ bool is_mqtt_communication_protocol_success(mqtt_communication_protocol_data_t* 
 	return mqtt_communication_protocol_data->error == MQTT_SUCCESS;
 }
 
-bool is_knx_communication_protocol_success(knx_communication_protocol_data_t* knx_communication_protocol_data)
-{
-	return knx_communication_protocol_data->error == KNX_SUCCESS;
-}
-
 bool is_communication_protocol_success(communication_protocol_type_data_t* communication_protocol_type_data)
 {
 	bool communication_protocol_success = false;
@@ -61,11 +43,6 @@ bool is_communication_protocol_success(communication_protocol_type_data_t* commu
 		case COMMUNICATION_PROTOCOL_MQTT:
 		{
 			communication_protocol_success = is_mqtt_communication_protocol_success(&communication_protocol_type_data->data.mqtt_communication_protocol_data);
-			break;
-		}
-		case COMMUNICATION_PROTOCOL_KNX:
-		{
-			communication_protocol_success = is_knx_communication_protocol_success(&communication_protocol_type_data->data.knx_communication_protocol_data);
 			break;
 		}
 		default:

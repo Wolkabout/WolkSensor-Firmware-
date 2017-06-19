@@ -247,7 +247,44 @@ int mqtt_subscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* me
  */
 int mqtt_ping(mqtt_broker_handle_t* broker, uint8_t* packet, uint16_t packet_size);
 
+#define MQTT_DUP_FLAG     1<<3
+#define MQTT_QOS0_FLAG    0<<1
+#define MQTT_QOS1_FLAG    1<<1
+#define MQTT_QOS2_FLAG    2<<1
+
+#define MQTT_RETAIN_FLAG  1
+
+#define MQTT_CLEAN_SESSION  1<<1
+#define MQTT_WILL_FLAG      1<<2
+#define MQTT_WILL_RETAIN    1<<5
+#define MQTT_USERNAME_FLAG  1<<7
+#define MQTT_PASSWORD_FLAG  1<<6
+
 void mqtt_init_will(mqtt_broker_handle_t* broker, const char * topic, const char *msg, uint8_t qos, uint8_t retain);
+
+/** Publish a message on a topic.
+ * @param broker Data structure that contains the connection information with the broker.
+ * @param topic The topic name.
+ * @param msg The message.
+ * @param retain Enable or disable the Retain flag (values: 0 or 1).
+ * @param qos Quality of Service (values: 0, 1 or 2)
+ * @param message_id Variable that will store the Message ID, if the pointer is not NULL.
+ *
+ * @retval  1 On success.
+ * @retval  0 On connection error.
+ * @retval -1 On IO error.
+ */
+int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint8_t retain, int qos, uint16_t* message_id);
+
+/** Send a PUBREL message. It's used for PUBLISH message with 2 QoS level.
+ * @param broker Data structure that contains the connection information with the broker.
+ * @param message_id Message ID
+ *
+ * @retval  1 On success.
+ * @retval  0 On connection error.
+ * @retval -1 On IO error.
+ */
+int mqtt_pubrel(mqtt_broker_handle_t* broker, uint16_t message_id);
 
 #ifdef __cplusplus
 }

@@ -136,3 +136,23 @@ uint32_t inet_pton_ipv4(const char *src, unsigned char *dst)
 	memcpy(dst, tmp, ADDRESSSIZE);
 	return true;
 }
+
+static unsigned int i2a(char* dest,unsigned int x) {
+   register unsigned int tmp=x;
+   register unsigned int len=0;
+   if (x>=100) { *dest++=tmp/100+'0'; tmp=tmp%100; ++len; }
+   if (x>=10) { *dest++=tmp/10+'0'; tmp=tmp%10; ++len; }
+   *dest++=tmp+'0';
+   return len+1;
+}
+
+char *inet_ntoa(uint32_t ip_address) {
+   static char buf[20];
+   unsigned int len;
+   unsigned char *ip=(unsigned char*)&ip_address;
+   len=i2a(buf,ip[3]); buf[len]='.'; ++len;
+   len+=i2a(buf+ len,ip[2]); buf[len]='.'; ++len;
+   len+=i2a(buf+ len,ip[1]); buf[len]='.'; ++len;
+   len+=i2a(buf+ len,ip[0]); buf[len]=0;
+   return buf;
+}

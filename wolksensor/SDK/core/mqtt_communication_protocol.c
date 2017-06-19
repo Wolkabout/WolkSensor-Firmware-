@@ -14,7 +14,7 @@
 #define MQTT_COMMUNICATION_PROTOCOL_EVENT_BUFFER_SIZE 10
 #define MQTT_BUFFER_SIZE (MAX_BUFFER_SIZE + 3 + MAX_DEVICE_ID_SIZE + 2)
 
-#define MQTT_KEEP_ALIVE_PERIOD 60 // sec 
+#define MQTT_KEEP_ALIVE_PERIOD 60 // sec
 
 typedef enum
 {
@@ -27,6 +27,10 @@ typedef enum
 	STATE_MQTT_CONNECTED,
 		STATE_MQTT_PUBLISH,
 		STATE_MQTT_RECEIVE_PUBLISH,
+		STATE_MQTT_RECEIVE_PUBACK,
+		STATE_MQTT_RECEIVE_PUBREC,
+		STATE_MQTT_SEND_PUBREL,
+		STATE_MQTT_RECEIVE_PUBCOMP,
 		STATE_MQTT_PING,
 			STATE_MQTT_SEND_PINREQ,
 			STATE_MQTT_RECEIVE_PINGRESP,
@@ -41,6 +45,9 @@ typedef enum
 	EVENT_MQTT_RECEIVE_CONNACK,
 	EVENT_MQTT_RECEIVE_SUBACK,
 	EVENT_MQTT_RECEIVE_PUBLISH,
+	EVENT_MQTT_RECEIVE_PUBACK,
+	EVENT_MQTT_RECEIVE_PUBREC,
+	EVENT_MQTT_RECEIVE_PUBCOMP,
 	EVENT_MQTT_RECEIVE_PINGRESP,
 	EVENT_COMMUNICATION_MODULE_PROCESS,
 	EVENT_COMMUNICATION_MODULE_DONE
@@ -58,8 +65,10 @@ typedef struct
 }
 mqtt_mesage_t;
 
+static uint16_t stack_message_id = 0;
+
 static state_machine_state_t mqtt_communication_protocol_state_machine;
-static state_machine_state_t mqtt_communication_protocol_states[13];
+static state_machine_state_t mqtt_communication_protocol_states[13+4];	//puback, pubrec, pubrel, pubcomp
 
 static circular_buffer_t mqtt_communication_protocol_event_buffer;
 static event_t mqtt_communication_protocol_event_buffer_storage[MQTT_COMMUNICATION_PROTOCOL_EVENT_BUFFER_SIZE];
@@ -69,7 +78,7 @@ static mqtt_broker_handle_t broker;
 static mqtt_mesage_t mqtt_message;
 
 static uint16_t mqtt_buffer_position = 0;
-static uint8_t mqtt_buffer[MQTT_BUFFER_SIZE];
+uint8_t mqtt_buffer[MQTT_BUFFER_SIZE];
 
 static circular_buffer_t* sending_sensor_readings_buffer = NULL;
 static uint16_t* sensor_readings_sent = NULL;
@@ -101,6 +110,10 @@ static bool state_mqtt_connecting(state_machine_state_t* state, event_t* event);
 static bool state_mqtt_connected(state_machine_state_t* state, event_t* event);	
 	static bool state_mqtt_publish(state_machine_state_t* state, event_t* event);
 	static bool state_mqtt_receive_publish(state_machine_state_t* state, event_t* event);
+	static bool state_mqtt_receive_puback(state_machine_state_t* state, event_t* event);
+	static bool state_mqtt_receive_pubrec(state_machine_state_t* state, event_t* event);
+	static bool state_mqtt_send_pubrel(state_machine_state_t* state, event_t* event);
+	static bool state_mqtt_receive_pubcomp(state_machine_state_t* state, event_t* event);
 	static bool state_mqtt_ping(state_machine_state_t* state, event_t* event);
 		static bool state_mqtt_send_pingreq(state_machine_state_t* state, event_t* event);
 		static bool state_mqtt_receive_pingresp(state_machine_state_t* state, event_t* event);
@@ -182,6 +195,10 @@ void mqtt_protocol_init(void)
 	init_state(STATE_MQTT_CONNECTED, NULL, &mqtt_communication_protocol_state_machine, -1, state_mqtt_connected);
 		init_state(STATE_MQTT_PUBLISH, NULL, &mqtt_communication_protocol_states[STATE_MQTT_CONNECTED], -1, state_mqtt_publish);
 		init_state(STATE_MQTT_RECEIVE_PUBLISH, NULL, &mqtt_communication_protocol_states[STATE_MQTT_CONNECTED], -1, state_mqtt_receive_publish);
+		init_state(STATE_MQTT_RECEIVE_PUBACK, NULL, &mqtt_communication_protocol_states[STATE_MQTT_CONNECTED], -1, state_mqtt_receive_puback);
+		init_state(STATE_MQTT_RECEIVE_PUBREC, NULL, &mqtt_communication_protocol_states[STATE_MQTT_CONNECTED], -1, state_mqtt_receive_pubrec);
+		init_state(STATE_MQTT_SEND_PUBREL, NULL, &mqtt_communication_protocol_states[STATE_MQTT_CONNECTED], -1, state_mqtt_send_pubrel);
+		init_state(STATE_MQTT_RECEIVE_PUBCOMP, NULL, &mqtt_communication_protocol_states[STATE_MQTT_CONNECTED], -1, state_mqtt_receive_pubcomp);
 		init_state(STATE_MQTT_PING, NULL, &mqtt_communication_protocol_states[STATE_MQTT_CONNECTED], -1, state_mqtt_ping);
 			init_state(STATE_MQTT_SEND_PINREQ, NULL, &mqtt_communication_protocol_states[STATE_MQTT_PING], -1, state_mqtt_send_pingreq);
 			init_state(STATE_MQTT_RECEIVE_PINGRESP, NULL, &mqtt_communication_protocol_states[STATE_MQTT_PING], -1, state_mqtt_receive_pingresp);
@@ -280,8 +297,10 @@ static bool mqtt_parse_message(void)
 		case MQTT_MSG_SUBACK:
 		{
 			LOG(1, "Mqtt message received: suback");
-			
+
 			mqtt_message.message_id = mqtt_parse_msg_id(mqtt_buffer);
+
+			LOG_PRINT(1,PSTR("Message ID: %d\n"), mqtt_message.message_id);
 
 			break;
 		}
@@ -292,6 +311,36 @@ static bool mqtt_parse_message(void)
 			mqtt_message.topic_size = mqtt_parse_pub_topic_ptr(mqtt_buffer, (const uint8_t**)&mqtt_message.topic);
 			
 			mqtt_message.data_size  = mqtt_parse_pub_msg_ptr(mqtt_buffer, (const uint8_t**)&mqtt_message.data);
+
+			break;
+		}
+		case MQTT_MSG_PUBACK:
+		{
+			LOG(1, "Mqtt message received: puback");
+
+			mqtt_message.message_id = stack_message_id;
+
+			LOG_PRINT(1,PSTR("Message ID: %d\n"), mqtt_message.message_id);
+
+			break;
+		}
+		case MQTT_MSG_PUBREC:
+		{
+			LOG(1, "Mqtt message received: pubrec");
+
+			mqtt_message.message_id = stack_message_id;
+
+			LOG_PRINT(1,PSTR("Message ID: %d\n"), mqtt_message.message_id);
+
+			break;
+		}
+		case MQTT_MSG_PUBCOMP:
+		{
+			LOG(1, "Mqtt message received: pubcomp");
+
+			mqtt_message.message_id = stack_message_id;
+
+			LOG_PRINT(1,PSTR("Message ID: %d\n"), mqtt_message.message_id);
 
 			break;
 		}
@@ -364,7 +413,7 @@ static bool state_mqtt_disconnected(state_machine_state_t* state, event_t* event
 		case EVENT_MQTT_PUBLISH:
 		{
 			LOG(1, "Mqtt send received in disconnected state");
-			
+
 			if(mqtt_parameters_set())
 			{
 				add_mqtt_communication_protocol_event_type(EVENT_MQTT_PUBLISH);
@@ -373,7 +422,7 @@ static bool state_mqtt_disconnected(state_machine_state_t* state, event_t* event
 			else
 			{
 				LOG(1, "Mqtt protocol parameters not set");	
-				
+
 				set_mqtt_communication_protocol_error(ERROR_MQTT_PARAMETERS_MISSING, state->id);
 			}
 			
@@ -382,7 +431,7 @@ static bool state_mqtt_disconnected(state_machine_state_t* state, event_t* event
 		case EVENT_MQTT_RECEIVE_PUBLISH:
 		{
 			LOG(1, "Mqtt receive received in disconnected state");
-			
+
 			if(mqtt_parameters_set())
 			{
 				add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBLISH);
@@ -391,16 +440,70 @@ static bool state_mqtt_disconnected(state_machine_state_t* state, event_t* event
 			else
 			{
 				LOG(1, "Mqtt protocol parameters not set");	
-				
+
 				set_mqtt_communication_protocol_error(ERROR_MQTT_PARAMETERS_MISSING, state->id);
 			}
 			
 			return true;
 		}
+		case EVENT_MQTT_RECEIVE_PUBACK:
+		{
+			LOG(1, "Mqtt receive received in disconnected state");
+
+			if(mqtt_parameters_set())
+			{
+				add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBACK);
+				transition(STATE_MQTT_CONNECTING);
+			}
+			else
+			{
+				LOG(1, "Mqtt protocol parameters not set");
+
+				set_mqtt_communication_protocol_error(ERROR_MQTT_PARAMETERS_MISSING, state->id);
+			}
+
+			return true;
+		}
+		case EVENT_MQTT_RECEIVE_PUBREC:
+		{
+			LOG(1, "Mqtt receive received in disconnected state");
+
+			if(mqtt_parameters_set())
+			{
+				add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBREC);
+				transition(STATE_MQTT_CONNECTING);
+			}
+			else
+			{
+				LOG(1, "Mqtt protocol parameters not set");
+
+				set_mqtt_communication_protocol_error(ERROR_MQTT_PARAMETERS_MISSING, state->id);
+			}
+
+			return true;
+		}
+		case EVENT_MQTT_RECEIVE_PUBCOMP:
+		{
+			LOG(1, "Mqtt receive received in disconnected state");
+
+			if(mqtt_parameters_set())
+			{
+				add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBCOMP);
+				transition(STATE_MQTT_CONNECTING);
+			}
+			else
+			{
+				LOG(1, "Mqtt protocol parameters not set");
+
+				set_mqtt_communication_protocol_error(ERROR_MQTT_PARAMETERS_MISSING, state->id);
+			}
+
+			return true;
+		}
 		case EVENT_LEAVING_STATE:
 		{
 			LOG(1, "Leaving mqtt disconnected state");
-			
+
 			return false;
 		}
 		default:
@@ -417,18 +520,21 @@ static bool state_mqtt_connecting(state_machine_state_t* state, event_t* event)
 		case EVENT_ENTERING_STATE:
 		{
 			LOG(1, "Entering mqtt connecting state");
-			
+
 			state->current_state = STATE_MQTT_SEND_CONNECT;
-		
+
 			return true;
 		}
 		case EVENT_MQTT_DISCONNECT:
 		{
 			LOG(1, "Ignoring mqtt connect/disconnect while connecting");
-			
+
 			return true; // ignore them
 		}
 		case EVENT_MQTT_PUBLISH:
+		case EVENT_MQTT_RECEIVE_PUBACK:
+		case EVENT_MQTT_RECEIVE_PUBREC:
+		case EVENT_MQTT_RECEIVE_PUBCOMP:
 		case EVENT_MQTT_RECEIVE_PUBLISH:
 		{
 			add_mqtt_communication_protocol_event_type(event->type); // retain event while connecting
@@ -753,23 +859,47 @@ static bool state_mqtt_connected(state_machine_state_t* state, event_t* event)
 		case EVENT_MQTT_PUBLISH:
 		{
 			LOG(1, "Mqtt publish received in connected state");
-			
+
 			transition(STATE_MQTT_PUBLISH);
-			
+
 			return true;
 		}
 		case EVENT_MQTT_RECEIVE_PUBLISH:
 		{
 			LOG(1, "Mqtt receive publish received in connected state");
-			
+
 			transition(STATE_MQTT_RECEIVE_PUBLISH);
-			
+
+			return true;
+		}
+		case EVENT_MQTT_RECEIVE_PUBACK:
+		{
+			LOG(1, "Mqtt puback received in connected state");
+
+			transition(STATE_MQTT_RECEIVE_PUBACK);
+
+			return true;
+		}
+		case EVENT_MQTT_RECEIVE_PUBREC:
+		{
+			LOG(1, "Mqtt pubrec received in connected state");
+
+			transition(STATE_MQTT_RECEIVE_PUBREC);
+
+			return true;
+		}
+		case EVENT_MQTT_RECEIVE_PUBCOMP:
+		{
+			LOG(1, "Mqtt pubcomp received in connected state");
+
+			transition(STATE_MQTT_RECEIVE_PUBCOMP);
+
 			return true;
 		}
 		case EVENT_LEAVING_STATE:
 		{
 			LOG(1,"Leaving mqtt connected state");
-			
+
 			return false;
 		}
 		default:
@@ -793,62 +923,65 @@ static bool state_mqtt_publish(state_machine_state_t* state, event_t* event)
 			clear_mqtt_buffer();
 			serialized_sensor_readings = 0;
 			serialized_system_items = 0;
-			
+
 			sprintf_P(topic, PSTR("sensors/%s"), device_id);
-			uint16_t header_size = 3 + strlen(topic) + 2;
-			
-			// payload
+
+			uint16_t mqtt_qos_level = MQTT_QOS_LEVEL_0;
+			uint16_t qos_size;
+			if(mqtt_qos_level == 0)
+				qos_size = 0;
+			else
+				qos_size = 2;
+
+			uint16_t header_size = MQTT_MAX_FIXED_HEADER_SIZE + strlen(topic) + MQTT_PACKAGE_ID_LENGTH + qos_size; //fixed header + variable header size
 			circular_buffer_t message_buffer;
 			circular_buffer_init(&message_buffer, mqtt_buffer + header_size, MQTT_BUFFER_SIZE - header_size, sizeof(char), false, true);
 			
 			if(sending_actuator != NULL && sending_actuator_state != NULL)
 			{
 				append_actuator_state(sending_actuator, sending_actuator_state, &message_buffer);
-				
+
 				LOG_PRINT(1, PSTR("Packed status message: %s\r\n"), message_buffer.storage);
 			}
 			else
 			{
 				append_rtc(rtc_get_ts(), &message_buffer);
-				
+
 				if(location && (commands_dependencies.get_surroundig_wifi_networks != NULL))
 				{
 					wifi_network_t networks[10];
 					uint8_t networks_number = commands_dependencies.get_surroundig_wifi_networks(networks, 10);
-					
+
 					append_detected_wifi_networks(networks, networks_number, &message_buffer);
 				}
-				
+
 				if(sending_system_buffer != NULL)
 				{
 					serialized_system_items = append_system_info(sending_system_buffer, 0, &message_buffer, false);
 				}
-				
+
 				if(sending_sensor_readings_buffer != NULL)
 				{
 					serialized_sensor_readings = append_sensor_readings(sending_sensor_readings_buffer, 0, &message_buffer, false);
 				}
-				
+
 				LOG_PRINT(1, PSTR("Packed readings message: %s\r\n"), message_buffer.storage);
-				
+
 				if(!ssl)
 				{
 					uint16_t encrypted_data_size = mqtt_communication_protocol_dependencies.encrypt(message_buffer.storage, circular_buffer_size(&message_buffer), device_preshared_key);
 					message_buffer.tail = encrypted_data_size;
 				}
 			}
-			
-			uint16_t mqtt_message_size = header_size + circular_buffer_size(&message_buffer);
-			
-			uint8_t *header = mqtt_buffer;
-			*header++ = MQTT_MSG_PUBLISH;
-			*header++ = ((mqtt_message_size - 3) % 128) | 0x80;
-			*header++ = (mqtt_message_size - 3) / 128;
-			*header++ = (header_size - 5) >> 8;
-			*header++ = (header_size - 5) & 0xFF;
-			memcpy(header, topic, (header_size - 5));
-			
-			communication_module_process_handle = communication_module.sendd(mqtt_buffer, mqtt_message_size);
+
+			LOG_PRINT(1,PSTR("Message buffer length: %d\n"), circular_buffer_size(&message_buffer));
+
+			uint16_t message_size = mqtt_publish_with_qos(&broker, topic, &message_buffer, 0, mqtt_qos_level, &message_id);
+
+			LOG_PRINT(1, PSTR("Message id : %d\n"), mqtt_message.message_id);
+			stack_message_id = mqtt_message.message_id;
+
+			communication_module_process_handle = communication_module.sendd(mqtt_buffer, message_size);
 			add_mqtt_communication_protocol_event_type(EVENT_COMMUNICATION_MODULE_PROCESS);
 			
 			return true;
@@ -901,25 +1034,25 @@ static bool state_mqtt_receive_publish(state_machine_state_t* state, event_t* ev
 		case EVENT_ENTERING_STATE:
 		{
 			LOG(1, "Entering mqtt receive publish state");
-			
+
 			add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBLISH);
-					
+
 			return true;
 		}
 		case EVENT_MQTT_RECEIVE_PUBLISH:
 		{
 			clear_mqtt_buffer();
-			
+
 			communication_module_process_handle = communication_module.receive(mqtt_buffer, MQTT_BUFFER_SIZE, &mqtt_buffer_position);
 			add_mqtt_communication_protocol_event_type(EVENT_COMMUNICATION_MODULE_PROCESS);
-			
+
 			return true;
 		}
 		case EVENT_COMMUNICATION_MODULE_DONE:
 		{
 			communication_module_type_data_t receive_result = communication_module.get_communication_result();
 			append_communication_module_type_data(&receive_result, &communication_protocol_type_data.communication_module_type_data);
-			
+
 			if(is_communication_module_success(&receive_result))
 			{				
 				if(mqtt_parse_message())
@@ -928,32 +1061,50 @@ static bool state_mqtt_receive_publish(state_machine_state_t* state, event_t* ev
 					{
 						LOG(1, "Mqtt publish message received");
 						LOG_PRINT(1, PSTR("Received data from mqtt server %s\r\n"), mqtt_message.data);
-						
+
 						if(mqtt_message.data_size > 0)
 						{
 							if(!ssl)
 							{
 								mqtt_communication_protocol_dependencies.decrypt(mqtt_message.data, mqtt_message.data_size, device_preshared_key);
 							}
-							
+
 							circular_buffer_t command_string_buffer;
 							circular_buffer_init(&command_string_buffer, mqtt_message.data, strlen(mqtt_message.data), sizeof(char), false, false);
 							command_string_buffer.head = 0;
 							command_string_buffer.tail = 0;
 							command_string_buffer.empty = false;
 							command_string_buffer.full = true;
-							
+
 							LOG_PRINT(1, PSTR("Received data: %s length %u\r\n"), command_string_buffer.storage, circular_buffer_size(&command_string_buffer));
-							
+
 							extract_commands_from_string_buffer(&command_string_buffer, received_commands_buffer);
 						}
-						
+
 						transition(STATE_MQTT_CONNECTED);
+					}
+					else if (mqtt_message.type == MQTT_MSG_PUBACK)
+					{
+						LOG(1, "Mqtt received PUBACK in receive publish state");
+
+						transition(STATE_MQTT_RECEIVE_PUBLISH);
+					}
+					else if (mqtt_message.type == MQTT_MSG_PUBREC)
+					{
+						LOG(1, "Mqtt received PUBREC in receive publish state");
+
+						transition(STATE_MQTT_SEND_PUBREL);
+					}
+					else if (mqtt_message.type == MQTT_MSG_PUBCOMP)
+					{
+						LOG(1, "Mqtt received PUBCOMP in receive publish state");
+
+						transition(STATE_MQTT_RECEIVE_PUBLISH);
 					}
 					else
 					{
 						LOG(1, "Mqtt message received not publish, retrying");
-						
+
 						add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBLISH);
 					}
 				}
@@ -965,9 +1116,9 @@ static bool state_mqtt_receive_publish(state_machine_state_t* state, event_t* ev
 			else
 			{
 				LOG(1, "Wifi communication module error while waiting mqtt publish message");
-				
+
 				set_mqtt_communication_protocol_error(ERROR_RECEIVING_MQTT_MESSAGE, state->id);
-				
+
 				transition(STATE_MQTT_DISCONNECTED);
 			}
 			
@@ -976,7 +1127,328 @@ static bool state_mqtt_receive_publish(state_machine_state_t* state, event_t* ev
 		case EVENT_LEAVING_STATE:
 		{
 			LOG(1,"Leaving mqtt receive publish state");
+
+			return false;
+		}
+		default:
+		{
+			return false;
+		}
+	}
+}
+
+static bool state_mqtt_receive_puback(state_machine_state_t* state, event_t* event)
+{
+	switch (event->type)
+	{
+		case EVENT_ENTERING_STATE:
+		{
+			LOG(1, "Entering mqtt receive puback state");
+
+			add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBACK);
+
+			return true;
+		}
+		case EVENT_MQTT_RECEIVE_PUBACK:
+		{
+			clear_mqtt_buffer();
+
+			communication_module_process_handle = communication_module.receive(mqtt_buffer, MQTT_BUFFER_SIZE, &mqtt_buffer_position);
+			add_mqtt_communication_protocol_event_type(EVENT_COMMUNICATION_MODULE_PROCESS);
+
+			return true;
+		}
+		case EVENT_COMMUNICATION_MODULE_DONE:
+		{
+			communication_module_type_data_t receive_result = communication_module.get_communication_result();
+			append_communication_module_type_data(&receive_result, &communication_protocol_type_data.communication_module_type_data);
+
+			if(is_communication_module_success(&receive_result))
+			{
+				if(mqtt_parse_message())
+				{
+					if(mqtt_message.type == MQTT_MSG_PUBACK)
+					{
+						LOG(1, "Mqtt puback message received");
+
+						if(mqtt_message.message_id == message_id)
+						{
+							LOG(1,"Puback message id matches");
+
+							transition(STATE_MQTT_CONNECTED);
+						}
+						else
+						{
+							LOG(1,"Puback message id does not match");
+
+							set_mqtt_communication_protocol_error(ERROR_INCORRECT_MQTT_MESSAGE_RECEIVED, state->id);
+
+							add_mqtt_communication_protocol_event_type(STATE_MQTT_DISCONNECTING);
+						}
+					}
+					else
+					{
+						LOG(1, "Mqtt message received not puback, retrying");
+
+						add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBACK);
+					}
+				}
+				else
+				{
+					LOG(1, "Mqtt puback message not received");
+
+					set_mqtt_communication_protocol_error(ERROR_RECEIVING_MQTT_MESSAGE, state->id);
+
+					transition(STATE_MQTT_DISCONNECTING);
+				}
+			}
+			else
+			{
+				LOG(1, "Communication module error while waiting mqtt puback message");
+
+				set_mqtt_communication_protocol_error(ERROR_RECEIVING_MQTT_MESSAGE, state->id);
+
+				transition(STATE_MQTT_DISCONNECTED);
+			}
 			
+			return true;
+		}
+		case EVENT_LEAVING_STATE:
+		{
+			LOG(1, "Leaving mqtt receive puback state");
+
+			return false;
+		}
+		default:
+		{
+			return false;
+		}
+	}
+}
+
+static bool state_mqtt_receive_pubrec(state_machine_state_t* state, event_t* event)
+{
+	switch (event->type)
+	{
+		case EVENT_ENTERING_STATE:
+		{
+			LOG(1, "Entering mqtt receive pubrec state");
+
+			add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBREC);
+
+			return true;
+		}
+		case EVENT_MQTT_RECEIVE_PUBREC:
+		{
+			clear_mqtt_buffer();
+
+			communication_module_process_handle = communication_module.receive(mqtt_buffer, MQTT_BUFFER_SIZE, &mqtt_buffer_position);
+			add_mqtt_communication_protocol_event_type(EVENT_COMMUNICATION_MODULE_PROCESS);
+
+			return true;
+		}
+		case EVENT_COMMUNICATION_MODULE_DONE:
+		{
+			communication_module_type_data_t receive_result = communication_module.get_communication_result();
+			append_communication_module_type_data(&receive_result, &communication_protocol_type_data.communication_module_type_data);
+
+			if(is_communication_module_success(&receive_result))
+			{
+				if(mqtt_parse_message())
+				{
+					if(mqtt_message.type == MQTT_MSG_PUBREC)
+					{
+						LOG(1, "Mqtt pubrec message received");
+
+						if(mqtt_message.message_id == message_id)
+						{
+							LOG(1,"Pubrec message id matches");
+
+							transition(STATE_MQTT_SEND_PUBREL);
+						}
+						else
+						{
+							LOG(1,"Pubrec message id does not match");
+
+							set_mqtt_communication_protocol_error(ERROR_INCORRECT_MQTT_MESSAGE_RECEIVED, state->id);
+
+							add_mqtt_communication_protocol_event_type(STATE_MQTT_DISCONNECTING);
+						}
+					}
+					else
+					{
+						LOG(1, "Mqtt message received not pubrec, retrying");
+
+						add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBACK);
+					}
+				}
+				else
+				{
+					LOG(1, "Mqtt pubrec message not received");
+
+					set_mqtt_communication_protocol_error(ERROR_RECEIVING_MQTT_MESSAGE, state->id);
+
+					transition(STATE_MQTT_DISCONNECTING);
+				}
+			}
+			else
+			{
+				LOG(1, "Communication module error while waiting mqtt pubrec message");
+
+				set_mqtt_communication_protocol_error(ERROR_RECEIVING_MQTT_MESSAGE, state->id);
+
+				transition(STATE_MQTT_DISCONNECTED);
+			}
+
+			return true;
+		}
+		case EVENT_LEAVING_STATE:
+		{
+			LOG(1, "Leaving mqtt receive pubrec state");
+
+			return false;
+		}
+		default:
+		{
+			return false;
+		}
+	}
+}
+
+static bool state_mqtt_send_pubrel(state_machine_state_t* state, event_t* event)
+{
+	switch (event->type)
+	{
+		case EVENT_ENTERING_STATE:
+		{
+			LOG(1, "Entering mqtt send pubrel state");
+
+			clear_mqtt_buffer();
+
+			uint16_t pubrel_message_size = mqtt_pubrel(&broker, stack_message_id);
+
+			communication_module_process_handle = communication_module.sendd(mqtt_buffer, pubrel_message_size);
+			add_mqtt_communication_protocol_event_type(EVENT_COMMUNICATION_MODULE_PROCESS);
+
+			return true;
+		}
+		case EVENT_COMMUNICATION_MODULE_DONE:
+		{
+			communication_module_type_data_t send_result = communication_module.get_communication_result();
+			append_communication_module_type_data(&send_result, &communication_protocol_type_data.communication_module_type_data);
+
+			if(is_communication_module_success(&send_result))
+			{
+				LOG(1, "Mqtt pubrel message sent");
+
+				LOG_PRINT(1,PSTR("Message ID: %d\n"), mqtt_message.message_id);
+
+				transition(STATE_MQTT_RECEIVE_PUBLISH);
+			}
+			else
+			{
+				LOG(1, "Unable to send mqtt pubrel message");
+
+				set_mqtt_communication_protocol_error(ERROR_SENDING_MQTT_MESSAGE, state->id);
+
+				transition(STATE_MQTT_DISCONNECTED);
+			}
+
+			return true;
+		}
+		case EVENT_LEAVING_STATE:
+		{
+			LOG(1, "Leaving mqtt send pubrel state");
+
+			return false;
+		}
+		default:
+		{
+			return false;
+		}
+	}
+}
+
+static bool state_mqtt_receive_pubcomp(state_machine_state_t* state, event_t* event)
+{
+	switch (event->type)
+	{
+		case EVENT_ENTERING_STATE:
+		{
+			LOG(1, "Entering mqtt receive pubcomp state");
+
+			add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBCOMP);
+
+			return true;
+		}
+		case EVENT_MQTT_RECEIVE_PUBCOMP:
+		{
+			clear_mqtt_buffer();
+
+			communication_module_process_handle = communication_module.receive(mqtt_buffer, MQTT_BUFFER_SIZE, &mqtt_buffer_position);
+			add_mqtt_communication_protocol_event_type(EVENT_COMMUNICATION_MODULE_PROCESS);
+
+			return true;
+		}
+		case EVENT_COMMUNICATION_MODULE_DONE:
+		{
+			communication_module_type_data_t receive_result = communication_module.get_communication_result();
+			append_communication_module_type_data(&receive_result, &communication_protocol_type_data.communication_module_type_data);
+
+			if(is_communication_module_success(&receive_result))
+			{
+				if(mqtt_parse_message())
+				{
+					if(mqtt_message.type == MQTT_MSG_PUBCOMP)
+					{
+						LOG(1, "Mqtt pubcomp message received");
+
+						if(mqtt_message.message_id == message_id)
+						{
+							LOG(1,"Pubcomp message id matches");
+
+							transition(STATE_MQTT_CONNECTED);
+						}
+						else
+						{
+							LOG(1,"Pubcomp message id does not match");
+
+							set_mqtt_communication_protocol_error(ERROR_INCORRECT_MQTT_MESSAGE_RECEIVED, state->id);
+
+							add_mqtt_communication_protocol_event_type(STATE_MQTT_DISCONNECTING);
+						}
+					}
+					else
+					{
+						LOG(1, "Mqtt message received not pubcomp, retrying");
+
+						add_mqtt_communication_protocol_event_type(EVENT_MQTT_RECEIVE_PUBCOMP);
+					}
+				}
+				else
+				{
+					LOG(1, "Mqtt pubcomp message not received");
+
+					set_mqtt_communication_protocol_error(ERROR_RECEIVING_MQTT_MESSAGE, state->id);
+
+					transition(STATE_MQTT_DISCONNECTING);
+				}
+			}
+			else
+			{
+				LOG(1, "Communication module error while waiting mqtt pubcomp message");
+
+				set_mqtt_communication_protocol_error(ERROR_RECEIVING_MQTT_MESSAGE, state->id);
+
+				transition(STATE_MQTT_DISCONNECTED);
+			}
+
+			return true;
+		}
+		case EVENT_LEAVING_STATE:
+		{
+			LOG(1, "Leaving mqtt receive pubcomp state");
+
 			return false;
 		}
 		default:

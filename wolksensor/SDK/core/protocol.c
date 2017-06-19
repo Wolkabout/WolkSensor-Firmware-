@@ -274,24 +274,9 @@ static uint16_t serialize_mqtt_communication_protocol_error(mqtt_communication_p
 	return 0;
 }
 
-static uint16_t serialize_knx_communication_protocol_error(knx_communication_protocol_data_t* knx_communication_protocol_data, char* buffer)
-{
-	if(knx_communication_protocol_data->error != 0)
-	{
-		return sprintf_P(buffer, PSTR("%01X%02X"), COMMUNICATION_PROTOCOL_KNX, knx_communication_protocol_data->error);
-	}
-
-	return 0;
-}
-
 static uint16_t serialize_mqtt_communication_protocol_data(mqtt_communication_protocol_data_t* mqtt_communication_protocol_data, char* buffer)
 {
 	return serialize_mqtt_communication_protocol_error(mqtt_communication_protocol_data, buffer);
-}
-
-static uint16_t serialize_knx_communication_protocol_data(knx_communication_protocol_data_t* knx_communication_protocol_data, char* buffer)
-{
-	return serialize_knx_communication_protocol_error(knx_communication_protocol_data, buffer);
 }
 
 static uint16_t serialize_communication_protocol_data(communication_protocol_type_data_t* communication_protocol_type_data, char* buffer)
@@ -302,11 +287,6 @@ static uint16_t serialize_communication_protocol_data(communication_protocol_typ
 		case COMMUNICATION_PROTOCOL_MQTT:
 		{
 			size += serialize_mqtt_communication_protocol_data(&communication_protocol_type_data->data.mqtt_communication_protocol_data, buffer);
-			break;
-		}
-		case COMMUNICATION_PROTOCOL_KNX:
-		{
-			size += serialize_knx_communication_protocol_data(&communication_protocol_type_data->data.knx_communication_protocol_data, buffer);
 			break;
 		}
 		default:
@@ -329,11 +309,6 @@ uint16_t serialize_communication_protocol_error(communication_protocol_type_data
 		case COMMUNICATION_PROTOCOL_MQTT:
 		{
 			size += serialize_mqtt_communication_protocol_error(&communication_protocol_type_data->data.mqtt_communication_protocol_data, buffer + size);
-			break;
-		}
-		case COMMUNICATION_PROTOCOL_KNX:
-		{
-			size += serialize_knx_communication_protocol_error(&communication_protocol_type_data->data.knx_communication_protocol_data, buffer + size);
 			break;
 		}
 		default:
@@ -510,7 +485,7 @@ bool append_signature(char* signature, circular_buffer_t* message_buffer)
 
 bool append_url(char* url, circular_buffer_t* message_buffer)
 {
-	sprintf_P(tmp, PSTR("URL %s;"), server_ip);
+	sprintf_P(tmp, PSTR("URL %s;"), host_name);
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }
@@ -718,54 +693,6 @@ bool append_actuator_state(actuator_t* actuator, actuator_state_t* actuator_stat
 	
 	circular_buffer_drop_from_end(buffer, 1); /* remove last | */
 	circular_buffer_add(buffer, ";");
-	
-	return true;
-}
-
-bool append_knx_physical_address(uint8_t knx_physical_address[2], circular_buffer_t* buffer)
-{
-	sprintf_P(tmp, PSTR("KNX_PHYSICAL_ADDRESS %u.%u.%u;"), knx_physical_address[0] >> 4, knx_physical_address[0] & 0x0F, knx_physical_address[1]);
-	circular_buffer_add_array(buffer, tmp, strlen(tmp));
-	
-	return true;
-}
-
-bool append_knx_group_address(uint8_t knx_group_address[2], circular_buffer_t* buffer)
-{
-	sprintf_P(tmp, PSTR("KNX_GROUP_ADDRESS %u.%u.%u;"), knx_group_address[0] >> 3, knx_group_address[0] & 0x07, knx_group_address[1]);
-	circular_buffer_add_array(buffer, tmp, strlen(tmp));
-	
-	return true;
-}
-
-bool append_multicast_address(char* multicast_address, circular_buffer_t* response_buffer)
-{
-	sprintf_P(tmp, PSTR("KNX_MULTICAST_ADDRESS %s;"), multicast_address);
-	circular_buffer_add_array(response_buffer, tmp, strlen(tmp));
-	
-	return true;
-}
-
-bool append_multicast_port(uint16_t multicast_port, circular_buffer_t* response_buffer)
-{
-	sprintf_P(tmp, PSTR("KNX_MULTICAST_PORT %u;"), multicast_port);
-	circular_buffer_add_array(response_buffer, tmp, strlen(tmp));
-	
-	return true;
-}
-
-bool append_knx_nat_status(bool knx_nat_status, circular_buffer_t* response_buffer)
-{
-	if (knx_nat_status)
-	{
-		sprintf_P(tmp, PSTR("KNX_NAT ON;"));
-	}
-	else
-	{
-		sprintf_P(tmp, PSTR("KNX_NAT OFF;"));
-	}
-	
-	circular_buffer_add_array(response_buffer, tmp, strlen(tmp));
 	
 	return true;
 }

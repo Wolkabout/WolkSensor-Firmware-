@@ -1,3 +1,5 @@
+#include<ctype.h>
+
 #include "command_parser.h"
 #include "commands.h"
 #include "logger.h"
@@ -238,6 +240,49 @@ static bool parse_numeric_argument(command_t* command, char* argument)
 	return true;
 }
 
+static bool check_domain(const char* received_string)
+{
+	uint8_t i;
+	uint8_t str_length = strlen(received_string);
+	uint8_t char_count = 0;
+
+	for(i = 0; i < str_length-1; i++)
+	{
+		if(isalpha(received_string[i]))
+			++char_count;
+	}
+
+	if(char_count == 0)
+		return false;
+
+	return true;
+}
+
+static bool check_hostname(const char* received_string)
+{
+	uint8_t str_length = strlen(received_string);
+	uint8_t i;
+
+	if(strlen(received_string) > 63 || strchr(received_string, '.') == NULL || received_string[0] == '-')
+		return false;
+
+	for(i = 0; i < str_length-1; i++)
+	{
+		if(isalpha(received_string[i]) || isdigit(received_string[i]) || received_string[i] == '.' || received_string[i] == '-')
+			continue;
+		else
+			return false;
+	}
+
+	if(received_string[str_length-1] == '-')
+		return false;
+
+	if(!check_domain(received_string))
+		return false;
+
+	return true;
+}
+
 static bool parse_commad_argument(command_t* command, char* argument)
 {
 	switch (command->type) {
@@ -288,13 +333,20 @@ static bool parse_commad_argument(command_t* command, char* argument)
 			return true;
 		}
 		case COMMAND_URL:
+		{
+			if(!inet_pton_ipv4(argument,NULL) && !check_hostname(argument))
+				return false;
+
+			strncpy(command->argument.string_argument, argument, COMMAND_ARGUMENT_MAX_LENGTH);
+			return true;
+		}
 		case COMMAND_STATIC_MASK:
 		case COMMAND_STATIC_GATEWAY:
 		case COMMAND_STATIC_DNS:
 		case COMMAND_STATIC_IP:
 		{
 			if(!inet_pton_ipv4(argument, NULL) && 0!=strcmp_P(argument, PSTR("OFF")))
-			return false;
+				return false;
 
 			strncpy(command->argument.string_argument, argument, COMMAND_ARGUMENT_MAX_LENGTH);
 			return true;

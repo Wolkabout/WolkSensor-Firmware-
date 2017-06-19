@@ -14,7 +14,7 @@
 
 #define FW_VERSION_MAJOR 4 // number 0 -99
 #define FW_VERSION_MINOR 1 // number 0 -99
-#define FW_VERSION_PATCH 13 // number 0 -99
+#define FW_VERSION_PATCH 16 // number 0 -99
 
 #define SYNCHRONIZED_BLOCK_START register8_t saved_sreg = SREG; cli();
 #define SYNCHRONIZED_BLOCK_END SREG = saved_sreg;

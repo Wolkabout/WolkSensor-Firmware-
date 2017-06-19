@@ -50,6 +50,9 @@ static char cc3100_static_mask[MAX_WIFI_STATIC_MASK_SIZE];
 static char cc3100_static_gateway[MAX_WIFI_STATIC_GATEWAY_SIZE];
 static char cc3100_static_dns[MAX_WIFI_STATIC_DNS_SIZE];
 
+char server_ip[MAX_SERVER_IP_SIZE];
+tcp_communication_module_data_t tcp_communication_module_data;
+
 static volatile bool fast_connect = false;
 
  static _u32 cipher = SL_SEC_MASK_TLS_RSA_WITH_AES_256_CBC_SHA;
@@ -176,8 +179,10 @@ void SimpleLinkNetAppEventHandler(SlNetAppEvent_t *pNetAppEvent)
     {
         case SL_NETAPP_IPV4_IPACQUIRED_EVENT:
         {
-			LOG_PRINT(1, PSTR("CC3100 IP address acquired %lu %lu %lu\r\n"), pNetAppEvent->EventData.ipAcquiredV4.ip, pNetAppEvent->EventData.ipAcquiredV4.gateway, pNetAppEvent->EventData.ipAcquiredV4.dns);
-			
+			LOG_PRINT(1, PSTR("\n\rIP add: %d.%d.%d.%d \n\rGateway add: %d.%d.%d.%d \n\rDNS add: %d.%d.%d.%d \n\r"), \
+			(int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,3), (int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,2), (int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,1), (int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,0), \
+			(int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,3), (int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,2), (int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,1), (int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,0), \
+			(int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.dns,3), (int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.dns,2), (int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.dns,1), (int)SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.dns,0));
 			
 			fast_connect = true;
 			
@@ -822,8 +827,41 @@ bool wifi_reset(void)
 
 int wifi_open_socket(char* address, uint16_t port, bool secure)
 {
-	LOG_PRINT(1, PSTR("CC3100 open socket %s\r\n"), secure ? "secure" : "unsecure");	
+	uint32_t ip_address;
+	unsigned long ulIpAddr = 0;
 
+	LOG_PRINT(1, PSTR("Server IP/URL is: %s\n"), server_ip);
+
+	if(inet_pton_ipv4(server_ip, NULL))
+	{
+		LOG(1, "Connect to the server with IP address\n");
+
+		ip_address = inet_aton(server_ip);
+		strcpy(server_ip,inet_ntoa(ip_address));
+		LOG_PRINT(1,PSTR("Server IP is : %s\n"),server_ip);
+	}
+
+	if(((int)tcp_communication_module_data.platform_specific_error_code < 0) || (!inet_pton_ipv4(server_ip,NULL)))
+	{
+		LOG(1, "DNS Get Host IP address By Name.\n");
+
+		long lRetVal = sl_NetAppDnsGetHostByName((signed char*)host_name, sizeof(host_name), &ulIpAddr, SL_AF_INET);
+		if(lRetVal < 0 || ulIpAddr == 0)
+		{
+			LOG(1, "Error to get IP address from DNS");
+			return -1;
+		}
+
+		tcp_communication_module_data.error = 0;
+
+		ip_address = ulIpAddr;
+
+		strcpy(server_ip,inet_ntoa(ip_address));
+
+		LOG_PRINT(1,PSTR("NEW SERVER IP : %s\n"),server_ip);
+	}
+
+	LOG_PRINT(1, PSTR("CC3100 open socket %s\r\n"), secure ? "secure" : "unsecure");
 	int16_t socket_id = sl_Socket(SL_AF_INET, SL_SOCK_STREAM, (secure ? SL_SEC_SOCKET : 0));
 	if(socket_id < 0)
 	{
@@ -873,8 +911,7 @@ int wifi_open_socket(char* address, uint16_t port, bool secure)
 	SlSockAddrIn_t socket_address_in;
 	socket_address_in.sin_family = SL_AF_INET;
 	socket_address_in.sin_port = sl_Htons((uint16_t)server_port);
-	
-	uint32_t ip_address = inet_aton(server_ip);
+
 	socket_address_in.sin_addr.s_addr = sl_Htonl((uint32_t)ip_address);
 	
 	uint8_t retries = 0;

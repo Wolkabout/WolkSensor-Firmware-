@@ -12,6 +12,13 @@
 #include "communication_protocol.h"
 #include "system.h"
 
+#define MQTT_MAX_FIXED_HEADER_SIZE	3
+#define MQTT_PACKAGE_ID_LENGTH		2
+
+#define MQTT_QOS_LEVEL_0		MQTT_QOS0_FLAG
+#define MQTT_QOS_LEVEL_1		MQTT_QOS1_FLAG
+#define MQTT_QOS_LEVEL_2		MQTT_QOS2_FLAG
+
 #ifdef __cplusplus
 extern "C"
 {
