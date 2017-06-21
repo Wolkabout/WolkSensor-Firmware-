@@ -22,7 +22,7 @@ bool ssl = true;
 unsigned char mac_address_nwmem[6];
 
 char server_ip[MAX_SERVER_IP_SIZE];
-char host_name[MAX_HOSTNAME_SIZE];
+char hostname[MAX_HOSTNAME_SIZE];
 
 uint16_t server_port = 8883;
 
@@ -183,15 +183,15 @@ bool load_wifi_mac_address(void)
 
 bool load_server_ip(void)
 {
-	if (global_dependencies.config_read(&host_name, CFG_SERVER_IP, 1, sizeof(host_name)))
+	if (global_dependencies.config_read(&hostname, CFG_SERVER_IP, 1, sizeof(hostname)))
 	{
-		LOG_PRINT(1, PSTR("Server IP was read: %s\r\n"), host_name);
+		LOG_PRINT(1, PSTR("Server IP was read: %s\r\n"), hostname);
 		
 		return true;
 	}
 
 	LOG(1, "Unable to read server IP");
-	memset(host_name, 0, sizeof(host_name));
+	memset(hostname, 0, sizeof(hostname));
 	return false;
 }
 

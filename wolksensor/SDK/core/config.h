@@ -109,7 +109,7 @@ extern bool ssl;
 extern unsigned char mac_address_nwmem[6];
 
 extern char server_ip[MAX_SERVER_IP_SIZE];
-extern char host_name[MAX_HOSTNAME_SIZE];
+extern char hostname[MAX_HOSTNAME_SIZE];
 
 extern uint16_t server_port;
 

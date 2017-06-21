@@ -485,7 +485,7 @@ bool append_signature(char* signature, circular_buffer_t* message_buffer)
 
 bool append_url(char* url, circular_buffer_t* message_buffer)
 {
-	sprintf_P(tmp, PSTR("URL %s;"), host_name);
+	sprintf_P(tmp, PSTR("URL %s;"), hostname);
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }

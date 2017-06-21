@@ -845,7 +845,7 @@ int wifi_open_socket(char* address, uint16_t port, bool secure)
 	{
 		LOG(1, "DNS Get Host IP address By Name.\n");
 
-		long lRetVal = sl_NetAppDnsGetHostByName((signed char*)host_name, sizeof(host_name), &ulIpAddr, SL_AF_INET);
+		long lRetVal = sl_NetAppDnsGetHostByName((signed char*)hostname, sizeof(hostname), &ulIpAddr, SL_AF_INET);
 		if(lRetVal < 0 || ulIpAddr == 0)
 		{
 			LOG(1, "Error to get IP address from DNS");
