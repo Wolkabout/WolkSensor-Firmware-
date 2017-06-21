@@ -68,7 +68,7 @@ mqtt_mesage_t;
 static uint16_t stack_message_id = 0;
 
 static state_machine_state_t mqtt_communication_protocol_state_machine;
-static state_machine_state_t mqtt_communication_protocol_states[13+4];	//puback, pubrec, pubrel, pubcomp
+static state_machine_state_t mqtt_communication_protocol_states[17];
 
 static circular_buffer_t mqtt_communication_protocol_event_buffer;
 static event_t mqtt_communication_protocol_event_buffer_storage[MQTT_COMMUNICATION_PROTOCOL_EVENT_BUFFER_SIZE];
@@ -974,9 +974,9 @@ static bool state_mqtt_publish(state_machine_state_t* state, event_t* event)
 				}
 			}
 
+			uint16_t buffer_size = circular_buffer_size(&message_buffer);
 			LOG_PRINT(1,PSTR("Message buffer length: %d\n"), circular_buffer_size(&message_buffer));
-
-			uint16_t message_size = mqtt_publish_with_qos(&broker, topic, &message_buffer, 0, mqtt_qos_level, &message_id);
+			uint16_t message_size = mqtt_publish_with_qos(&broker, topic, &message_buffer, 0, mqtt_qos_level, &message_id, mqtt_buffer, buffer_size);
 
 			LOG_PRINT(1, PSTR("Message id : %d\n"), mqtt_message.message_id);
 			stack_message_id = mqtt_message.message_id;

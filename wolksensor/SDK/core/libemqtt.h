@@ -274,7 +274,7 @@ void mqtt_init_will(mqtt_broker_handle_t* broker, const char * topic, const char
  * @retval  0 On connection error.
  * @retval -1 On IO error.
  */
-int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint8_t retain, int qos, uint16_t* message_id);
+int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint8_t retain, int qos, uint16_t* message_id, uint8_t* packet, uint16_t msglen);
 
 /** Send a PUBREL message. It's used for PUBLISH message with 2 QoS level.
  * @param broker Data structure that contains the connection information with the broker.

@@ -27,10 +27,6 @@
 
 #include <string.h>
 #include "libemqtt.h"
-#include "platform_specific.h"
-#include "circular_buffer.h"
-
-uint8_t mqtt_buffer[803];
 
 uint8_t mqtt_num_rem_len_bytes(const uint8_t* buf) {
 	uint8_t num_bytes = 1;
@@ -397,10 +393,9 @@ int mqtt_subscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* me
 	return message_size;
 }
 
-int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint8_t retain, int qos_flag, uint16_t* message_id)
+int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint8_t retain, int qos_flag, uint16_t* message_id, uint8_t* packet, uint16_t msglen)
 {
 	uint16_t topic_len = strlen(topic);
-	uint16_t msg_len = circular_buffer_size(msg);
 	uint8_t qos_size;
 	if(qos_flag == 0)
 		qos_size = 0;
@@ -408,14 +403,14 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 		qos_size = 2;
 
 	//Variable header form
-	uint8_t variable_header[topic_len+2+qos_size];
-	variable_header[0] = topic_len>>8;
-	variable_header[1] = topic_len&0xFF;
+	uint8_t var_header[topic_len+2+qos_size];
+	var_header[0] = topic_len>>8;
+	var_header[1] = topic_len&0xFF;
 
 	if(qos_size)
 	{
-		variable_header[topic_len+2] = broker->seq>>8;
-		variable_header[topic_len+3] = broker->seq&0xFF;
+		var_header[topic_len+2] = broker->seq>>8;
+		var_header[topic_len+3] = broker->seq&0xFF;
 
 		if(message_id)
 		{
@@ -427,7 +422,7 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 
 	//Fixed header form
 	uint8_t fixed_header_size = 3;
-	uint16_t remaining_length = sizeof(variable_header) + msg_len;
+	uint16_t remaining_length = sizeof(var_header) + msglen;
 	uint8_t fixed_header[fixed_header_size];
 
 	//Message Type, DUP flag, QoS level, Retain
@@ -445,16 +440,14 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 	fixed_header[1] = fixed_header[1] | 0x80;
 	fixed_header[2] = remaining_length / 128;
 
-	uint8_t *header = mqtt_buffer;
-	*header++ = fixed_header[0];
-	*header++ = fixed_header[1];
-	*header++ = fixed_header[2];
-	*header++ = variable_header[0];
-	*header++ = variable_header[1];
+	*packet++ = fixed_header[0];
+	*packet++ = fixed_header[1];
+	*packet++ = fixed_header[2];
+	*packet++ = var_header[0];
+	*packet++ = var_header[1];
+	memcpy(packet, topic, topic_len);
 
-	memcpy(header, topic, topic_len);
-
-	return sizeof(variable_header)+sizeof(fixed_header)+msg_len;
+	return sizeof(var_header)+sizeof(fixed_header)+msglen;
 }
 
 int mqtt_pubrel(mqtt_broker_handle_t* broker, uint16_t message_id) {
