@@ -20,9 +20,9 @@ from serial_func import receive_string_serial
 from device_test_func import wait_dev_state_idle
 from device_test_func import unwanted_response
 from device_test_func import protocol_parser
-from device_test_func import set_wifi_parameters
 from device_test_func import parse_readings
 from device_test_func import test
+from device_wlan_set import set_wifi_parameters
 
 
 def robustness():
@@ -73,7 +73,7 @@ def robustness():
 
     logging_device.info("---------------- Read/Write values during connection ----------------")
     logging_device.log("\t---True---")
-    if not set_wifi_parameters('fakeargumentssid', 'fakeargumentpass', 'NONE'):
+    if not set_wifi_parameters('fakeargumentssid', 'NONE', 'fakeargumentpass'):
         return_value = False
     if not check_more_commands(['NOW;', 'SIGNATURE;STATIC_DNS;VERSION;PASS;MOVEMENT;SSID;STATIC_IP;MAC;HEARTBEAT;RTC;AUTH;PASS;TEMP_OFFSET;ID;STATUS;OFFSET_FACTORY'], True, "show"):
         return_value = False
@@ -86,7 +86,7 @@ def robustness():
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.log("\t---True---")
-    set_wifi_parameters('WA_1', 'wolksensorsystem', 'WPA2')
+    set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem')
     wait_dev_state_idle()
     if not check_more_commands(['NOW;'], True, "show"):
         return_value = False
@@ -97,7 +97,7 @@ def robustness():
 
     logging_device.info("---------------- Read/Write during reload ----------------")
     logging_device.log("\n\r\t---False---")
-    if not set_wifi_parameters('NULL', 'NULL', 'NONE'):
+    if not set_wifi_parameters('NULL', 'NONE', 'NULL'):
         return_value = False
     if not check_more_commands(['RELOAD;', 'SIGNATURE;STATIC_DNS;VERSION;PASS;OFFSET_FACTORY;MOVEMENT;SSID;STATIC_IP;MAC;HEARTBEAT;RTC;AUTH;PASS;ID;STATUS;'], False, "show"):
         return_value = False
@@ -114,7 +114,7 @@ def robustness():
     logging_device.info("---------------- Read during movement ----------------")
     logging_device.log("\t---True---")
     wait_dev_state_idle()
-    if not set_wifi_parameters('WA_1', 'wolksensorsystem', 'WPA2'):
+    if not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'):
         return_value = False
     protocol_parser('MOVEMENT', True, 'ON', True)
 
@@ -128,7 +128,7 @@ def robustness():
 
     logging_device.log("\t---False---")
     wait_dev_state_idle()
-    if not set_wifi_parameters('fakeargumentssid', 'FA7EA4603E27', 'WEP'):
+    if not set_wifi_parameters('fakeargumentssid', 'WEP', 'FA7EA4603E27'):
         return_value = False
     protocol_parser('MOVEMENT', True, 'ON', True)
 
@@ -142,7 +142,7 @@ def robustness():
 
     wait_dev_state_idle()
     protocol_parser('MOVEMENT', True, 'OFF', True)
-    while not set_wifi_parameters('WA_1', 'wolksensorsystem', 'WPA2'): pass
+    while not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'): pass
     if not check_more_commands(['NOW;'], True, "show"):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
@@ -151,7 +151,7 @@ def robustness():
     logging_device.log("\t---True---")
     BUFFER_SIZE = 180
     wait_dev_state_idle()
-    while not set_wifi_parameters('NULL', 'NULL', 'NONE'): pass
+    while not set_wifi_parameters('NULL', 'NONE', 'NULL'): pass
     check_more_commands(['ATMO ON;'],True, "show")
     if not parse_readings('CLEAR', "show"):
         return_value = False
@@ -203,7 +203,7 @@ def robustness():
 
     logging_device.info("\n\r\t\t---------------- Return WolkSensor to settings before the test was started ----------------")
     wait_dev_state_idle()
-    while not set_wifi_parameters('WA_1', 'wolksensorsystem', 'WPA2'): pass
+    while not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'): pass
     while not protocol_parser('MOVEMENT', True, 'OFF', True): pass
     while not protocol_parser('ATMO', True, 'ON', True): pass
 

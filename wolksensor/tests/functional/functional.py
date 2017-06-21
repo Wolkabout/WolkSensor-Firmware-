@@ -33,7 +33,7 @@ def main():
     initialisation()
 
     while 1:
-        serial = open_serial()
+        serial = open_serial('auto')
         if serial == True:
 
             if data_driven():

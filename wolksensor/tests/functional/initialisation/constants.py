@@ -14,7 +14,7 @@ VID          = 'VID_0403'
 PID          = 'PID_6015'
 
 URL          = '52.30.233.2'
-URLSTAGING   = '52.208.251.133'
+HOSTNAME     = 'app.wolksense.com'
 PORT         = '8883'
 
 TIMESTAMPSTRING     = 'R:'

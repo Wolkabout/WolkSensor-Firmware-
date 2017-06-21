@@ -25,14 +25,14 @@ from device_test_func import receive_string_serial
 from device_test_func import send_string_serial_wait
 from device_test_func import wait_dev_state_idle
 from device_test_func import parse_system_reading
-from device_test_func import set_wifi_parameters
 from device_test_func import test_readings_response
+from device_wlan_set import set_wifi_parameters
 
 def flow_states():
     return_value = True
 
     logging_device.info("\n\r\t\t   Flow States Testing\n\r***************************************************************\n\r")
-    while not set_wifi_parameters('WA_1', 'wolksensorsystem', 'WPA2'): pass
+    while not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'): pass
     while not protocol_parser('MOVEMENT', True, 'OFF', True): pass
     while not protocol_parser('ATMO', True, 'ON', True): pass
     while not protocol_parser('STATIC_IP', True, 'OFF', True): pass
@@ -40,50 +40,50 @@ def flow_states():
     logging_device.info("\t\t---------------- Set WiFi Flow ----------------")
     logging_device.log("\t---True flow---")
     logging_device.info("\n\r\t\t-------- set Wifi with WPA2 secure --------")
-    response = test_now()
+    response = test_now('', '')
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
 
     logging_device.info("\n\r\t\t-------- set Wifi with WPA secure --------")
-    if not set_wifi_parameters('WolkSensorWlan2', 'WolkSensorFabrication', 'WPA'):
+    if not set_wifi_parameters('WolkSensorWlan2', 'WPA', 'WolkSensorFabrication'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-    response = test_now()
+    response = test_now('', '')
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
 
     logging_device.info("\n\r\t\t-------- set Wifi with WEP secure --------")
-    if not set_wifi_parameters('WolkSensorWlan', '5FD6D8ED2087FEF502CDFE873F', 'WEP'):
+    if not set_wifi_parameters('WolkSensorWlan', 'WEP', '5FD6D8ED2087FEF502CDFE873F'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-    response = test_now()
+    response = test_now('', '')
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
 
     logging_device.info("\n\r\t\t-------- set Wifi with OPEN secure --------")
-    if not set_wifi_parameters('WolkSensorWlan1', 'NULL', 'NONE'):
+    if not set_wifi_parameters('WolkSensorWlan1', 'NONE', 'NULL'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-    response = test_now()
+    response = test_now('', '')
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
 
     logging_device.log("\t---False flow---")
-    if not set_wifi_parameters('my0penwl4n', 'NULL', 'NONE'):
+    if not set_wifi_parameters('my0penwl4n', 'NONE', 'NULL'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-    if test_now() == True:
+    if test_now('', '') == True:
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.info("\n\r\t\t-------- read Readings --------")
     logging_device.log("\t---True flow---")
     wait_dev_state_idle()
-    while not set_wifi_parameters('NULL', 'NULL', 'NONE'): pass
+    while not set_wifi_parameters('NULL', 'NONE', 'NULL'): pass
     test('MOVEMENT', ['OFF'],[])
     test('ATMO', ['ON'],[])
     if not parse_readings('CLEAR', "show"):
@@ -190,7 +190,7 @@ def flow_states():
     wait_dev_state_idle()
     test('MOVEMENT', ['ON'],[])
     test('ATMO', ['OFF'],[])
-    if not set_wifi_parameters('NULL', 'NULL', 'NONE'):
+    if not set_wifi_parameters('NULL', 'NONE', 'NULL'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
     if not parse_readings('CLEAR', "show"):
@@ -225,37 +225,37 @@ def flow_states():
     logging_device.info("\n\r\t\t-------- read System readings--------")
     logging_device.log("\t---True flow---")
     wait_dev_state_idle()
-    if not set_wifi_parameters('WA_1', 'wolksensorsystem', 'WPA2'):
+    if not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
-    if not parse_system_reading('CLEAR'):
+    if not parse_system_reading('CLEAR', 'show'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
     logging_device.log("---NOW---")
     wait_dev_state_idle()
-    while test_now() != True:
+    while test_now('', '') != True:
         pass
-    if not parse_system_reading(''):
+    if not parse_system_reading('', 'show'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.log("\t---False flow---")
     wait_dev_state_idle()
-    if not set_wifi_parameters('doesnotexist', 'doesnotexist', 'WPA'):
+    if not set_wifi_parameters('doesnotexist', 'WPA', 'doesnotexist'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-    if not parse_system_reading('CLEAR'):
+    if not parse_system_reading('CLEAR', 'show'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
     logging_device.log("---NOW---")
     wait_dev_state_idle()
-    if test_now() == True:
+    if test_now('', '') == True:
         return_value = False
-        logging_device.error("Return value is %s. Received false from test_now()" %return_value)
+        logging_device.error("Return value is %s. Received false from test_now('', '')" %return_value)
 
     wait_dev_state_idle()
-    if not parse_system_reading(''):
+    if not parse_system_reading('', 'show'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
@@ -264,7 +264,7 @@ def flow_states():
 
     logging_device.log("\t---True flow---")
     wait_dev_state_idle()
-    if not set_wifi_parameters('WA_1', 'wolksensorsystem', 'WPA2'):
+    if not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
     if not protocol_parser('STATIC_IP', False, '', True):
@@ -280,7 +280,7 @@ def flow_states():
         i += 2
     logging_device.log("---NOW---")
     wait_dev_state_idle()
-    response = test_now()
+    response = test_now('', '')
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
@@ -297,7 +297,7 @@ def flow_states():
         i += 1
     logging_device.log("---NOW---")
     wait_dev_state_idle()
-    response = test_now()
+    response = test_now('', '')
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
@@ -316,7 +316,7 @@ def flow_states():
         i += 2
     logging_device.log("---NOW---")
     wait_dev_state_idle()
-    response = test_now()
+    response = test_now('', '')
     if response == True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
@@ -328,7 +328,7 @@ def flow_states():
     while not protocol_parser('ATMO', True, 'ON', True): pass
 
     logging_device.info("\n\r\t\t-------- Factory OFFSET settings --------")
-    while not set_wifi_parameters('NULL', 'NULL', 'NONE'): pass
+    while not set_wifi_parameters('NULL', 'NONE', 'NULL'): pass
     wait_dev_state_idle()
 
     if not set_offset(-10, -5, 15):
