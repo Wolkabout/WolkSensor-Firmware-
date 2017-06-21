@@ -240,25 +240,25 @@ static bool parse_numeric_argument(command_t* command, char* argument)
 	return true;
 }
 
-static bool check_domain(const char* received_string)
-{
+static bool check_top_level_domain(const char* received_string){
+	const char* string_remain;
 	uint8_t i;
-	uint8_t str_length = strlen(received_string);
-	uint8_t char_count = 0;
 
-	for(i = 0; i < str_length-1; i++)
-	{
-		if(isalpha(received_string[i]))
-			++char_count;
+	string_remain = strchr(received_string, '.');
+	LOG_PRINT(1,PSTR("String remain is: %s\n"),string_remain);
+
+	for(i = 0; i < strlen(string_remain)-1; i++){
+		if(string_remain[i] == '.' || isalpha(string_remain[i])){
+			continue;
+		}else{
+			return false;
+		}
 	}
-
-	if(char_count == 0)
-		return false;
 
 	return true;
 }
 
-static bool check_hostname(const char* received_string)
+static bool check_hostname_constraints(const char* received_string)
 {
 	uint8_t str_length = strlen(received_string);
 	uint8_t i;
@@ -274,11 +274,12 @@ static bool check_hostname(const char* received_string)
 			return false;
 	}
 
-	if(received_string[str_length-1] == '-')
+	if(received_string[str_length-1] == '-' || received_string[0] == '-')
 		return false;
 
-	if(!check_domain(received_string))
+	if(!check_top_level_domain(received_string)){
 		return false;
+	}
 
 	return true;
 }
@@ -334,7 +335,7 @@ static bool parse_commad_argument(command_t* command, char* argument)
 		}
 		case COMMAND_URL:
 		{
-			if(!inet_pton_ipv4(argument,NULL) && !check_hostname(argument))
+			if(!inet_pton_ipv4(argument,NULL) && !check_hostname_constraints(argument))
 				return false;
 
 			strncpy(command->argument.string_argument, argument, COMMAND_ARGUMENT_MAX_LENGTH);
