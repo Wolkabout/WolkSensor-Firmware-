@@ -42,7 +42,7 @@ def data_driven():
     if not protocol_parser('STATUS', False,'', True) or not protocol_parser('STATUS', True, 'change status', False):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-    '''
+
     logging_device.info("\n\r\t\t-------- VERSION --------")
     if not protocol_parser('VERSION', False,'', True) or not protocol_parser('VERSION', True, 'which version', False):
         return_value = False
@@ -64,13 +64,13 @@ def data_driven():
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.info("------------------- R\W parameters -------------------")
-    '''
+
     logging_device.info("\n\r\t\t-------- URL --------")
     if not test('URL', ['8.8.8.8', '0.0.0.0', '255.255.255.255', 'appwolksense.com', 'app-wolksense.com', '9gag.com', 'automatika.ftn.uns.ac.rs', 'ftn.uns.ac.rs', constants.URL, constants.HOSTNAME], ['', '-1.-1.-1.-1', '256.256.256.256',\
     'appwolksense', '-app.wolksense', 'app.wolksense-', 'app.wolksense*com', '9821.com.123', '9gag.123.com', 'abc.123.abc.abc', 'app.wolksense.comapp.wolksense.comapp.wolksense.comapp.wolksense.comapp.wolksense.com' , '\Test1234', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-    '''
+
     logging_device.info("\n\r\t\t-------- SSID --------")
     if not test('SSID', ['mywirelessnetwork', '1234567890', 'm4w1r3l3ssn3tw0rk', 'qwertyuiopqwertyuiopqwertyuiopqw', '' , '!")(*&^%', '\n\r', 'WA_1'], ['qwertyuiopqwertyuiopqwertyuiopqwe']):
         return_value = False
@@ -185,7 +185,7 @@ def data_driven():
     if not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-    '''
+
 
     logging_device.log("\n\r")
     return return_value

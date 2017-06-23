@@ -32,7 +32,7 @@ def flow_states():
     return_value = True
 
     logging_device.info("\n\r\t\t   Flow States Testing\n\r***************************************************************\n\r")
-    while not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'): pass
+    while not set_wifi_parameters('wolkabout', 'WPA2', 'Walkm3int0'): pass
     while not protocol_parser('MOVEMENT', True, 'OFF', True): pass
     while not protocol_parser('ATMO', True, 'ON', True): pass
     while not protocol_parser('STATIC_IP', True, 'OFF', True): pass
@@ -44,7 +44,7 @@ def flow_states():
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
-
+    '''
     logging_device.info("\n\r\t\t-------- set Wifi with WPA secure --------")
     if not set_wifi_parameters('WolkSensorWlan2', 'WPA', 'WolkSensorFabrication'):
         return_value = False
@@ -71,7 +71,7 @@ def flow_states():
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
-
+    '''
     logging_device.log("\t---False flow---")
     if not set_wifi_parameters('my0penwl4n', 'NONE', 'NULL'):
         return_value = False
@@ -225,7 +225,7 @@ def flow_states():
     logging_device.info("\n\r\t\t-------- read System readings--------")
     logging_device.log("\t---True flow---")
     wait_dev_state_idle()
-    if not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'):
+    if not set_wifi_parameters('wolkabout', 'WPA2', 'Walkm3int0'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
@@ -258,13 +258,13 @@ def flow_states():
     if not parse_system_reading('', 'show'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-
+    '''
     logging_device.info("\n\r\t\t-------- set Static IP--------")
     while not protocol_parser('ATMO', True, 'OFF', True): pass
 
     logging_device.log("\t---True flow---")
     wait_dev_state_idle()
-    if not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'):
+    if not set_wifi_parameters('wolkabout', 'WPA2', 'Walkm3int0'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
     if not protocol_parser('STATIC_IP', False, '', True):
@@ -326,7 +326,7 @@ def flow_states():
         logging_device.error("Return value is %s" %return_value)
 
     while not protocol_parser('ATMO', True, 'ON', True): pass
-
+    '''
     logging_device.info("\n\r\t\t-------- Factory OFFSET settings --------")
     while not set_wifi_parameters('NULL', 'NONE', 'NULL'): pass
     wait_dev_state_idle()
