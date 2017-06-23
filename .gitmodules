@@ -1,0 +1,3 @@
+[submodule "lib/WolkSensorPythonLib"]
+	path = lib/WolkSensorPythonLib
+	url = https://github.com/Wolkabout/WolkSensor-Python-Lib-.git
