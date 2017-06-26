@@ -264,7 +264,7 @@ static bool tcp_communication_module_handler(state_machine_state_t* state, event
 
 static bool connection_parameters_set(void)
 {
-	return *server_ip != 0 && server_port != 0;
+	return *hostname != 0 && server_port != 0;
 }
 
 static bool state_socket_closed(state_machine_state_t* state, event_t* event)
@@ -354,7 +354,7 @@ static bool state_opening_socket(state_machine_state_t* state, event_t* event)
 		{
 			LOG(1, "TCP opening socket");
 			
-			if((open_socket_id = tcp_communication_module_dependencies.open_socket(server_ip, server_port, ssl)) >= 0)
+			if((open_socket_id = tcp_communication_module_dependencies.open_socket(hostname, server_port, ssl)) >= 0)
 			{
 				LOG(1, "TCP socket opened");
 				

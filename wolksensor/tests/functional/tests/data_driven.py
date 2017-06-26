@@ -21,7 +21,7 @@ from device_test_func import parse_system_reading
 from device_test_func import protocol_parser
 from device_test_func import test
 from device_test_func import wait_dev_state_idle
-from device_test_func import set_wifi_parameters
+from device_wlan_set import set_wifi_parameters
 
 
 def data_driven():
@@ -66,7 +66,8 @@ def data_driven():
     logging_device.info("------------------- R\W parameters -------------------")
 
     logging_device.info("\n\r\t\t-------- URL --------")
-    if not test('URL', ['8.8.8.8', '0.0.0.0', '255.255.255.255', constants.URLSTAGING], ['', '-1.-1.-1.-1', '256.256.256.256', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
+    if not test('URL', ['8.8.8.8', '0.0.0.0', '255.255.255.255', 'appwolksense.com', 'app-wolksense.com', '9gag.com', 'automatika.ftn.uns.ac.rs', 'ftn.uns.ac.rs', constants.URL, constants.HOSTNAME], ['', '-1.-1.-1.-1', '256.256.256.256',\
+    'appwolksense', '-app.wolksense', 'app.wolksense-', 'app.wolksense*com', '9821.com.123', '9gag.123.com', 'abc.123.abc.abc', 'app.wolksense.comapp.wolksense.comapp.wolksense.comapp.wolksense.comapp.wolksense.com' , '\Test1234', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
@@ -181,9 +182,10 @@ def data_driven():
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
-    if not set_wifi_parameters('WA_1', 'wolksensorsystem', 'WPA2'):
+    if not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
+
 
     logging_device.log("\n\r")
     return return_value
@@ -215,14 +217,14 @@ def test_system_response():
     i = 0
     list = ['', 'CLEAR']
     while i < len(list):
-        if not parse_system_reading(list[i]):
+        if not parse_system_reading(list[i], 'show'):
             response = False
         i += 1
 
     i = 0
     list = ['-1.-1.-1.-1', '256.256.256.256', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']
     while i < len(list):
-        if parse_system_reading(list[i]):
+        if parse_system_reading(list[i], 'show'):
             response = False
         logging_device.log("False conditions: " + list[i])
         i += 1

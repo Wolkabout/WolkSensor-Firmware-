@@ -159,27 +159,9 @@ typedef struct
 }
 mqtt_communication_protocol_data_t;
 
-typedef enum
-{
-	KNX_SUCCESS = 0x00,
-	ERROR_CONNECTING_TO_KNX_NETWORK = 0x10,
-	ERROR_SENDING_KNX_MESSAGE = 0x20,
-	ERROR_RECEIVING_KNX_MESSAGE = 0x30,
-	ERROR_INCORRECT_KNX_MESSAGE_RECEIVED = 0x40,
-	ERROR_KNX_PARAMETERS_MISSING = 0x50
-}
-knx_communication_protocol_error_type_t;
-
-typedef struct
-{
-	uint8_t error;
-}
-knx_communication_protocol_data_t;
-
 typedef union
 {
 	mqtt_communication_protocol_data_t mqtt_communication_protocol_data;
-	knx_communication_protocol_data_t knx_communication_protocol_data;
 }
 communication_protocol_data_t;
 
@@ -198,11 +180,9 @@ typedef struct
 }
 communication_and_battery_data_t;
 
-void append_knx_communication_protocol_data(knx_communication_protocol_data_t* operation_data, knx_communication_protocol_data_t* total_data);
 void append_mqtt_communication_protocol_data(mqtt_communication_protocol_data_t* operation_data, mqtt_communication_protocol_data_t* total_data);
 void append_communication_protocol_type_data(communication_protocol_type_data_t* operation_data, communication_protocol_type_data_t* total_data);
 
-bool is_knx_communication_protocol_success(knx_communication_protocol_data_t* knx_communication_protocol_data);
 bool is_mqtt_communication_protocol_success(mqtt_communication_protocol_data_t* mqtt_communication_protocol_data);
 bool is_communication_protocol_success(communication_protocol_type_data_t* communication_protocol_type_data);
 

@@ -252,8 +252,9 @@ command_execution_result_t cmd_url(command_t* command, circular_buffer_t* respon
 	
 	if (command->has_argument)
 	{
+		strncpy(hostname, command->argument.string_argument, sizeof(hostname));
 		strncpy(server_ip, command->argument.string_argument, sizeof(server_ip));
-		global_dependencies.config_write(server_ip, CFG_SERVER_IP, 1, sizeof(server_ip));
+		global_dependencies.config_write(hostname, CFG_SERVER_IP, 1, sizeof(hostname));
 		
 		if(commands_dependencies.communication_module_close_socket)
 		{
@@ -262,7 +263,7 @@ command_execution_result_t cmd_url(command_t* command, circular_buffer_t* respon
 		}
 	}
 	
-	append_url(server_ip, response_buffer);
+	append_url(hostname, response_buffer);
 	return COMMAND_EXECUTED_SUCCESSFULLY;
 }
 

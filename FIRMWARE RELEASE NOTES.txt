@@ -1,0 +1,45 @@
+
+**FIRMWARE RELEASE NOTES**
+--------------------------
+
+*WolkSensor device*
+-----------------
+
+*WolkAbout Technology s.r.o.*
+
+WolkSensor is a device with built-in temperature, pressure, humidity and movement sensor.
+List of Firmware Release Versions for WolkSensor device in WolkSensor.bin file:
+
+**Version 4.1.10**
+
+- [Fixed] Connect to OPEN secure WLAN network issue
+
+**Version 4.1.11**
+
+- [Fixed] Set factory offset value to P:0,T:0,H:0;
+
+**Version 4.1.12**
+
+- [Fixed] Correct corrupted WolkSensor device configuration data after update procedure within SSID, PASS and AUTH fields
+- [New] Different certificate for production and staging server
+
+**Version 4.1.13**
+
+- [Fixed] Correct read from new EEPROM addresses for firmware transit from v3.01 to v4.1.xx
+
+**Version 4.1.14**
+
+- [New] Introduce hostname and enable its resolving
+- [New] Hostname, not server IP address stored in EEPROM
+- [New] URL command responds with hostname, not with server IP address
+- [New] Resolve hostname and internally operate with the obtained server IP
+
+**Version 4.1.15**
+
+- [New] Expand URL command to accept both hostname and server IP address with appropriate constraints
+
+**Version 4.1.16**
+
+- [New] Introduce MQTT publish with QoS function
+- [New] Support publish with Quality of Service Level 1
+- [New] Support publish with Quality of Service Level 2
