@@ -240,19 +240,20 @@ static bool parse_numeric_argument(command_t* command, char* argument)
 	return true;
 }
 
-static bool check_top_level_domain(const char* received_string){
+static bool check_top_level_domain(const char* received_string)
+{
 	const char* string_remain;
 	uint8_t i;
 
 	string_remain = strchr(received_string, '.');
 	LOG_PRINT(1,PSTR("String remain is: %s\n"),string_remain);
 
-	for(i = 0; i < strlen(string_remain)-1; i++){
-		if(string_remain[i] == '.' || isalpha(string_remain[i])){
+	for(i = 0; i < strlen(string_remain)-1; i++)
+	{
+		if(string_remain[i] == '.' || isalpha(string_remain[i]))
 			continue;
-		}else{
+		else
 			return false;
-		}
 	}
 
 	return true;
