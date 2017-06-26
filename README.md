@@ -77,3 +77,17 @@ Data acquired while device is operational (battery voltage, connection duration 
 -------
 
 Errors that occur during device operation should be logged on device. Errors are delivered to the WolkSense sensor data cloud with SYSTEM message in case of communication with WolkSense sensor data cloud or can be read in WolkSensor Assistant application.
+
+**WolkSensor functional tests**
+-------
+
+WolkSensor functional tests help to ensure that the firmware is working correctly by checking whether data format is correct and satisfying in the matter of specific constraints, by covering different data flows and situations through which both true and false cases are brought to the device. What is also being tested: connection to the cloud, data publishing, device specific commands, sensor readings, device parameters, etc.
+
+Functional tests consist of three sections:
+1. Data driven tests
+2. Flow tests
+3. Robustness tests
+
+At the end of each test section, it is desired to obtain an output in form of a *Test passed* message. If the output should be *Test failed*, please refer to the test log for details.
+
+In order to run the functional tests, *WolkSensor-python-lib* library is required. This library is imported to the *WolkSensor-Firmware-* project as a  GitHub submodule.
