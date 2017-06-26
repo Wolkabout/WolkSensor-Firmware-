@@ -9,85 +9,85 @@
     <RootNamespace>$(MSBuildProjectName)</RootNamespace>
     <AsfFrameworkConfig>
       <framework-data>
-  <options />
-  <configurations>
-    <configuration key="config.xmega.drivers.usb.device.sleepmgr" value="with_sleepmgr" default="with_sleepmgr" content-id="Atmel.ASF" />
-  </configurations>
-  <files>
-    <file path="src/main.c" framework="" version="" source="common/applications/user_application/main.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/config/conf_board.h" framework="" version="" source="common/applications/user_application/user_board/config/conf_board.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/boards/board.h" framework="" version="" source="common/boards/board.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/boards/user_board/init.c" framework="" version="" source="common/boards/user_board/init.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/boards/user_board/user_board.h" framework="" version="" source="common/boards/user_board/user_board.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/utils/interrupt.h" framework="" version="" source="common/utils/interrupt.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/utils/interrupt/interrupt_avr8.h" framework="" version="" source="common/utils/interrupt/interrupt_avr8.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/utils/make/Makefile.avr.in" framework="" version="" source="common/utils/make/Makefile.avr.in" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/utils/parts.h" framework="" version="" source="common/utils/parts.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/assembler.h" framework="" version="" source="xmega/utils/assembler.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/assembler/gas.h" framework="" version="" source="xmega/utils/assembler/gas.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/bit_handling/clz_ctz.h" framework="" version="" source="xmega/utils/bit_handling/clz_ctz.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/compiler.h" framework="" version="" source="xmega/utils/compiler.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/preprocessor/mrepeat.h" framework="" version="" source="xmega/utils/preprocessor/mrepeat.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/preprocessor/preprocessor.h" framework="" version="" source="xmega/utils/preprocessor/preprocessor.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/preprocessor/stringz.h" framework="" version="" source="xmega/utils/preprocessor/stringz.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/preprocessor/tpaste.h" framework="" version="" source="xmega/utils/preprocessor/tpaste.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/progmem.h" framework="" version="" source="xmega/utils/progmem.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/utils/status_codes.h" framework="" version="" source="xmega/utils/status_codes.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/ioport/xmega/ioport_compat.c" framework="" version="3.8.1" source="common\services\ioport\xmega\ioport_compat.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/ioport/xmega/ioport_compat.h" framework="" version="3.8.1" source="common\services\ioport\xmega\ioport_compat.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/ioport/xmega/ioport.h" framework="" version="3.8.1" source="common\services\ioport\xmega\ioport.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/ioport/ioport.h" framework="" version="3.8.1" source="common\services\ioport\ioport.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/cpu/ccp.s" framework="" version="3.8.1" source="xmega\drivers\cpu\ccp.s" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/cpu/xmega_reset_cause.h" framework="" version="3.8.1" source="xmega\drivers\cpu\xmega_reset_cause.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/cpu/ccp.h" framework="" version="3.8.1" source="xmega\drivers\cpu\ccp.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/nvm/nvm.c" framework="" version="3.8.1" source="xmega\drivers\nvm\nvm.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/nvm/nvm_asm.s" framework="" version="3.8.1" source="xmega\drivers\nvm\nvm_asm.s" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/nvm/nvm.h" framework="" version="3.8.1" source="xmega\drivers\nvm\nvm.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/sleep/sleep.h" framework="" version="3.8.1" source="xmega\drivers\sleep\sleep.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/clock/xmega/sysclk.c" framework="" version="3.8.1" source="common\services\clock\xmega\sysclk.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/clock/pll.h" framework="" version="3.8.1" source="common\services\clock\pll.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/clock/genclk.h" framework="" version="3.8.1" source="common\services\clock\genclk.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/clock/osc.h" framework="" version="3.8.1" source="common\services\clock\osc.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/clock/xmega/pll.h" framework="" version="3.8.1" source="common\services\clock\xmega\pll.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/clock/xmega/sysclk.h" framework="" version="3.8.1" source="common\services\clock\xmega\sysclk.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/clock/xmega/osc.h" framework="" version="3.8.1" source="common\services\clock\xmega\osc.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/clock/sysclk.h" framework="" version="3.8.1" source="common\services\clock\sysclk.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/sleepmgr/xmega/sleepmgr.c" framework="" version="3.8.1" source="common\services\sleepmgr\xmega\sleepmgr.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/sleepmgr/sleepmgr.h" framework="" version="3.8.1" source="common\services\sleepmgr\sleepmgr.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/sleepmgr/xmega/sleepmgr.h" framework="" version="3.8.1" source="common\services\sleepmgr\xmega\sleepmgr.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/usb_atmel.h" framework="" version="3.8.1" source="common\services\usb\usb_atmel.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/usb_protocol.h" framework="" version="3.8.1" source="common\services\usb\usb_protocol.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/class/cdc/usb_protocol_cdc.h" framework="" version="3.8.1" source="common\services\usb\class\cdc\usb_protocol_cdc.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc.c" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\udi_cdc.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc_desc.c" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\udi_cdc_desc.c" changed="False" content-id="Atmel.ASF" />
-    <file path="atmel_devices_cdc.cat" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\atmel_devices_cdc.cat" changed="False" content-id="Atmel.ASF" />
-    <file path="atmel_devices_cdc.inf" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\atmel_devices_cdc.inf" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc.h" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\udi_cdc.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc_conf.h" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\udi_cdc_conf.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/udc/udc.c" framework="" version="3.8.1" source="common\services\usb\udc\udc.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/udc/udc.h" framework="" version="3.8.1" source="common\services\usb\udc\udc.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/udc/udd.h" framework="" version="3.8.1" source="common\services\usb\udc\udd.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/udc/udc_desc.h" framework="" version="3.8.1" source="common\services\usb\udc\udc_desc.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/usb/udc/udi.h" framework="" version="3.8.1" source="common\services\usb\udc\udi.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/usb/usb_device.c" framework="" version="3.8.1" source="xmega\drivers\usb\usb_device.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/usb/usb_device.h" framework="" version="3.8.1" source="xmega\drivers\usb\usb_device.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/delay/delay.h" framework="" version="3.8.1" source="common\services\delay\delay.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/delay/xmega/cycle_counter.h" framework="" version="3.8.1" source="common\services\delay\xmega\cycle_counter.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/pmic/pmic.h" framework="" version="3.8.1" source="xmega\drivers\pmic\pmic.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/serial/usart_serial.c" framework="" version="3.8.1" source="common\services\serial\usart_serial.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/serial/xmega_usart/usart_serial.h" framework="" version="3.8.1" source="common\services\serial\xmega_usart\usart_serial.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/common/services/serial/serial.h" framework="" version="3.8.1" source="common\services\serial\serial.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/usart/usart.c" framework="" version="3.8.1" source="xmega\drivers\usart\usart.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/xmega/drivers/usart/usart.h" framework="" version="3.8.1" source="xmega\drivers\usart\usart.h" changed="False" content-id="Atmel.ASF" />
-  </files>
-  <documentation help="http://asf.atmel.com/docs/3.8.1/common.applications.user_application.user_board.xmegac/html/index.html" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.28.1" />
-  </dependencies>
-  <project id="common.applications.user_application.user_board.xmegac" value="Add" config="" content-id="Atmel.ASF" />
-  <board id="board.user_board.xmegac" value="Add" config="" content-id="Atmel.ASF" />
-</framework-data>
+        <options />
+        <configurations>
+          <configuration key="config.xmega.drivers.usb.device.sleepmgr" value="with_sleepmgr" default="with_sleepmgr" content-id="Atmel.ASF" />
+        </configurations>
+        <files>
+          <file path="src/main.c" framework="" version="" source="common/applications/user_application/main.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/config/conf_board.h" framework="" version="" source="common/applications/user_application/user_board/config/conf_board.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/boards/board.h" framework="" version="" source="common/boards/board.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/boards/user_board/init.c" framework="" version="" source="common/boards/user_board/init.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/boards/user_board/user_board.h" framework="" version="" source="common/boards/user_board/user_board.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/utils/interrupt.h" framework="" version="" source="common/utils/interrupt.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/utils/interrupt/interrupt_avr8.h" framework="" version="" source="common/utils/interrupt/interrupt_avr8.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/utils/make/Makefile.avr.in" framework="" version="" source="common/utils/make/Makefile.avr.in" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/utils/parts.h" framework="" version="" source="common/utils/parts.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/assembler.h" framework="" version="" source="xmega/utils/assembler.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/assembler/gas.h" framework="" version="" source="xmega/utils/assembler/gas.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/bit_handling/clz_ctz.h" framework="" version="" source="xmega/utils/bit_handling/clz_ctz.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/compiler.h" framework="" version="" source="xmega/utils/compiler.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/preprocessor/mrepeat.h" framework="" version="" source="xmega/utils/preprocessor/mrepeat.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/preprocessor/preprocessor.h" framework="" version="" source="xmega/utils/preprocessor/preprocessor.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/preprocessor/stringz.h" framework="" version="" source="xmega/utils/preprocessor/stringz.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/preprocessor/tpaste.h" framework="" version="" source="xmega/utils/preprocessor/tpaste.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/progmem.h" framework="" version="" source="xmega/utils/progmem.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/utils/status_codes.h" framework="" version="" source="xmega/utils/status_codes.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/ioport/xmega/ioport_compat.c" framework="" version="3.8.1" source="common\services\ioport\xmega\ioport_compat.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/ioport/xmega/ioport_compat.h" framework="" version="3.8.1" source="common\services\ioport\xmega\ioport_compat.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/ioport/xmega/ioport.h" framework="" version="3.8.1" source="common\services\ioport\xmega\ioport.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/ioport/ioport.h" framework="" version="3.8.1" source="common\services\ioport\ioport.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/cpu/ccp.s" framework="" version="3.8.1" source="xmega\drivers\cpu\ccp.s" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/cpu/xmega_reset_cause.h" framework="" version="3.8.1" source="xmega\drivers\cpu\xmega_reset_cause.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/cpu/ccp.h" framework="" version="3.8.1" source="xmega\drivers\cpu\ccp.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/nvm/nvm.c" framework="" version="3.8.1" source="xmega\drivers\nvm\nvm.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/nvm/nvm_asm.s" framework="" version="3.8.1" source="xmega\drivers\nvm\nvm_asm.s" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/nvm/nvm.h" framework="" version="3.8.1" source="xmega\drivers\nvm\nvm.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/sleep/sleep.h" framework="" version="3.8.1" source="xmega\drivers\sleep\sleep.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/clock/xmega/sysclk.c" framework="" version="3.8.1" source="common\services\clock\xmega\sysclk.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/clock/pll.h" framework="" version="3.8.1" source="common\services\clock\pll.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/clock/genclk.h" framework="" version="3.8.1" source="common\services\clock\genclk.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/clock/osc.h" framework="" version="3.8.1" source="common\services\clock\osc.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/clock/xmega/pll.h" framework="" version="3.8.1" source="common\services\clock\xmega\pll.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/clock/xmega/sysclk.h" framework="" version="3.8.1" source="common\services\clock\xmega\sysclk.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/clock/xmega/osc.h" framework="" version="3.8.1" source="common\services\clock\xmega\osc.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/clock/sysclk.h" framework="" version="3.8.1" source="common\services\clock\sysclk.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/sleepmgr/xmega/sleepmgr.c" framework="" version="3.8.1" source="common\services\sleepmgr\xmega\sleepmgr.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/sleepmgr/sleepmgr.h" framework="" version="3.8.1" source="common\services\sleepmgr\sleepmgr.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/sleepmgr/xmega/sleepmgr.h" framework="" version="3.8.1" source="common\services\sleepmgr\xmega\sleepmgr.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/usb_atmel.h" framework="" version="3.8.1" source="common\services\usb\usb_atmel.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/usb_protocol.h" framework="" version="3.8.1" source="common\services\usb\usb_protocol.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/class/cdc/usb_protocol_cdc.h" framework="" version="3.8.1" source="common\services\usb\class\cdc\usb_protocol_cdc.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc.c" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\udi_cdc.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc_desc.c" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\udi_cdc_desc.c" changed="False" content-id="Atmel.ASF" />
+          <file path="atmel_devices_cdc.cat" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\atmel_devices_cdc.cat" changed="False" content-id="Atmel.ASF" />
+          <file path="atmel_devices_cdc.inf" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\atmel_devices_cdc.inf" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc.h" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\udi_cdc.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/class/cdc/device/udi_cdc_conf.h" framework="" version="3.8.1" source="common\services\usb\class\cdc\device\udi_cdc_conf.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/udc/udc.c" framework="" version="3.8.1" source="common\services\usb\udc\udc.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/udc/udc.h" framework="" version="3.8.1" source="common\services\usb\udc\udc.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/udc/udd.h" framework="" version="3.8.1" source="common\services\usb\udc\udd.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/udc/udc_desc.h" framework="" version="3.8.1" source="common\services\usb\udc\udc_desc.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/usb/udc/udi.h" framework="" version="3.8.1" source="common\services\usb\udc\udi.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/usb/usb_device.c" framework="" version="3.8.1" source="xmega\drivers\usb\usb_device.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/usb/usb_device.h" framework="" version="3.8.1" source="xmega\drivers\usb\usb_device.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/delay/delay.h" framework="" version="3.8.1" source="common\services\delay\delay.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/delay/xmega/cycle_counter.h" framework="" version="3.8.1" source="common\services\delay\xmega\cycle_counter.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/pmic/pmic.h" framework="" version="3.8.1" source="xmega\drivers\pmic\pmic.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/serial/usart_serial.c" framework="" version="3.8.1" source="common\services\serial\usart_serial.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/serial/xmega_usart/usart_serial.h" framework="" version="3.8.1" source="common\services\serial\xmega_usart\usart_serial.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/serial/serial.h" framework="" version="3.8.1" source="common\services\serial\serial.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/usart/usart.c" framework="" version="3.8.1" source="xmega\drivers\usart\usart.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/usart/usart.h" framework="" version="3.8.1" source="xmega\drivers\usart\usart.h" changed="False" content-id="Atmel.ASF" />
+        </files>
+        <documentation help="http://asf.atmel.com/docs/3.8.1/common.applications.user_application.user_board.xmegac/html/index.html" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.28.1" />
+        </dependencies>
+        <project id="common.applications.user_application.user_board.xmegac" value="Add" config="" content-id="Atmel.ASF" />
+        <board id="board.user_board.xmegac" value="Add" config="" content-id="Atmel.ASF" />
+      </framework-data>
     </AsfFrameworkConfig>
     <avrdevice>ATxmega256C3</avrdevice>
     <avrdeviceseries>xmegac</avrdeviceseries>
@@ -236,7 +236,6 @@
         <avrgcc.compiler.optimization.OtherFlags>-fdata-sections -fshort-enums</avrgcc.compiler.optimization.OtherFlags>
         <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
         <avrgcc.compiler.miscellaneous.OtherFlags>-std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
-        <avrgcc.linker.general.DoNotUseStandardStartFiles />
         <avrgcc.linker.general.DoNotUseDefaultLibraries />
         <avrgcc.linker.general.NoStartupOrDefaultLibs />
         <avrgcc.linker.miscellaneous.LinkerFlags>-Wl,--relax -T../my_linker.lds</avrgcc.linker.miscellaneous.LinkerFlags>
@@ -291,7 +290,6 @@
 copy /B /Y "$(OutputDirectory)\$(OutputFileName).o" "$(SolutionDir)bootloader\$(Configuration)\src"
 
 "$(SolutionDir)tools\version.bat" "$(MSBuildProjectDirectory)\src\wiSensors.h"  "$(OutputDirectory)\finalversion.txt"
-
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
