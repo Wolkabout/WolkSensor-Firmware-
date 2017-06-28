@@ -10,5 +10,11 @@
 *.elf
 *.eep
 .vs
-Debug
+Debug/src/**
 Release
+*.lss
+*.map
+*.srec
+*.txt
+*.mk
+Makefile
