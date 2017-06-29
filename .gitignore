@@ -10,11 +10,10 @@
 *.elf
 *.eep
 .vs
-Debug/src/**
 Release
 *.lss
 *.map
 *.srec
-*.txt
+wolksensor\wolksensor\Debug\*.txt
 *.mk
 Makefile
