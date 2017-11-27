@@ -369,12 +369,12 @@ static _i32 SetTime(void)
 	_i32 retVal = -1;
 	SlDateTime_t dateTime= {0};
 
-	dateTime.sl_tm_day = 1;
-	dateTime.sl_tm_mon = 1;
-	dateTime.sl_tm_year = 2016;
-	dateTime.sl_tm_hour = 0;
-	dateTime.sl_tm_min = 0;
-	dateTime.sl_tm_sec = 0;
+	dateTime.sl_tm_day = 27;
+	dateTime.sl_tm_mon = 11;
+	dateTime.sl_tm_year = 2017;
+	dateTime.sl_tm_hour = 11;
+	dateTime.sl_tm_min = 55;
+	dateTime.sl_tm_sec = 01;
 
 	retVal = sl_DevSet(SL_DEVICE_GENERAL_CONFIGURATION,SL_DEVICE_GENERAL_CONFIGURATION_DATE_TIME,
 	sizeof(SlDateTime_t),(_u8 *)(&dateTime));
