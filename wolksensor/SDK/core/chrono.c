@@ -11,7 +11,7 @@ void chrono_init(bool reset)
 {
 	if(reset)
 	{
-		RTC_offset = 0x52c35a80;
+		RTC_offset = 0x5A497A00; //01st January 2018.
 	}
 }
 
