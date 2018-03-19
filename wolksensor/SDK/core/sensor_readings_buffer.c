@@ -19,20 +19,20 @@ void init_sensor_readings_buffer(bool clear)
 	LOG_PRINT(2, PSTR("Readings buffer size after init %u\r\n"), circular_buffer_size(&sensor_readings_buffer));
 }
 
-void store_sensor_readings(int16_t* sensor_values)
+void store_sensor_readings(float* sensor_values)
 {
 	sensor_readings_t sensor_readings;
 
 	sensor_readings.timestamp = rtc_get_ts();
 
-	memcpy(&sensor_readings.values, sensor_values, sizeof(int16_t) * NUMBER_OF_SENSORS);
+	memcpy(&sensor_readings.values, sensor_values, sizeof(float) * NUMBER_OF_SENSORS);
 
 	LOG(2, "Storing sensors readings");
 	
 	uint8_t i;
 	for(i = 0; i < NUMBER_OF_SENSORS; i++)
 	{
-		LOG_PRINT(1, PSTR("Storing sensor %c:%d\r\n"), sensors[i].id, sensor_readings.values[i]);
+		LOG_PRINT(1, PSTR("Storing sensor %c:%.2f\r\n"), sensors[i].id, sensor_readings.values[i]);
 	}
 
 	circular_buffer_add(&sensor_readings_buffer, &sensor_readings);

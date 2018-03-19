@@ -44,12 +44,12 @@ void init_sensors(void)
 	batteryADC_init();
 }
 
-static bool get_pressure(int16_t *value)
-{	
-	*value = BME280_GetPressure()*10;
-	*value += atmo_offset[1];
+static bool get_pressure(float *value)
+{
+	*value = BME280_GetPressure();
+	*value += atmo_offset[1]/10;
 
-	if( (*value > PRESSURE_OPERATING_RANGE_MAX) || (*value < PRESSURE_OPERATING_RANGE_MIN) )
+	if( (*value > PRESSURE_OPERATING_RANGE_MAX/10) || (*value < PRESSURE_OPERATING_RANGE_MIN/10) )
 	{
 		LOG(1, "Pressure measurement is out of operating range");
 		return false;
@@ -58,12 +58,12 @@ static bool get_pressure(int16_t *value)
 	return true;
 }
 
-static bool get_temperature(int16_t *value)
+static bool get_temperature(float *value)
 {
-	*value = BME280_GetTemperature()*10;
-	*value += atmo_offset[0];
+	*value = BME280_GetTemperature();
+	*value += atmo_offset[0]/10;
 
-	if( (*value > TEMPERATURE_OPERATING_RANGE_MAX) || (*value < TEMPERATURE_OPERATING_RANGE_MIN) )
+	if( (*value > TEMPERATURE_OPERATING_RANGE_MAX/10) || (*value < TEMPERATURE_OPERATING_RANGE_MIN/10) )
 	{
 		LOG(1, "Temperature measurement is out of operating range");
 		return false;
@@ -72,12 +72,12 @@ static bool get_temperature(int16_t *value)
 	return true;
 }
 
-static bool get_humidity(int16_t *value)
+static bool get_humidity(float *value)
 {
-	*value = BME280_GetHumidity()*10;
-	*value += atmo_offset[2];
+	*value = BME280_GetHumidity();
+	*value += atmo_offset[2]/10;
 
-	if( (*value > HUMIDITY_OPERATING_RANGE_MAX) || (*value < HUMIDITY_OPERATING_RANGE_MIN) )
+	if( (*value > HUMIDITY_OPERATING_RANGE_MAX/10) || (*value < HUMIDITY_OPERATING_RANGE_MIN/10) )
 	{
 		LOG(1, "Humidity measurement is out of operating range");
 		return false;
@@ -99,7 +99,7 @@ bool get_sensors_states(char* sensors_ids, uint8_t sensors_count)
 	}
 	
 	while (sensor_twi.status != TWIM_STATUS_READY) {}
-		
+	
 	sensor_state_t atmo_sensors_states[NUMBER_OF_SENSORS];
 	
 	for(uint8_t i = 0; i < sensors_count; i++)
@@ -113,7 +113,7 @@ bool get_sensors_states(char* sensors_ids, uint8_t sensors_count)
 				atmo_sensors_states[i].id = 'P';
 				if(!get_pressure(&atmo_sensors_states[i].value))
 				{
-					atmo_sensors_states[i].value = 0; 
+					atmo_sensors_states[i].value = 0;
 				}
 				break;
 			}
@@ -143,7 +143,7 @@ bool get_sensors_states(char* sensors_ids, uint8_t sensors_count)
 			}
 		}
 	}
-	
+
 	if(sensors_states_listener) sensors_states_listener(atmo_sensors_states, sensors_count);
 	
 	if(!BME280_SetOversamplingMode(BME280_SLEEP_MODE))

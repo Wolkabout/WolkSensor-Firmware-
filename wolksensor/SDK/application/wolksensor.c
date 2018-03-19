@@ -255,7 +255,7 @@ static void sensors_states_listener(sensor_state_t* sensors_states, uint8_t sens
 {
 	LOG_PRINT(1, PSTR("Received %u sensor states\r\n"), sensors_count);
 	
-	int16_t sensors_values[NUMBER_OF_SENSORS];
+	float sensors_values[NUMBER_OF_SENSORS];
 	
 	uint8_t i;
 	for(i = 0; i < NUMBER_OF_SENSORS; i++)
