@@ -252,8 +252,14 @@ command_execution_result_t cmd_url(command_t* command, circular_buffer_t* respon
 	
 	if (command->has_argument)
 	{
+		if(strlen(command->argument.string_argument) > MAX_HOSTNAME_SIZE)
+		{
+				append_bad_request(response_buffer);
+				return COMMAND_EXECUTED_SUCCESSFULLY;
+		}
 		strncpy(hostname, command->argument.string_argument, sizeof(hostname));
 		strncpy(server_ip, command->argument.string_argument, sizeof(server_ip));
+		LOG_PRINT(1, PSTR("command->argument.string_argument: %s \n\rhostname: %s\n\rsizeof(command->argument.string_argument): %d\n\rsizeof(hostname): %d \n\r"), command->argument.string_argument, hostname, sizeof(command->argument.string_argument), sizeof(hostname));
 		global_dependencies.config_write(hostname, CFG_SERVER_IP, 1, sizeof(hostname));
 		
 		if(commands_dependencies.communication_module_close_socket)

@@ -21,8 +21,8 @@ bool ssl = true;
 
 unsigned char mac_address_nwmem[6];
 
-char server_ip[MAX_SERVER_IP_SIZE];
-char hostname[MAX_HOSTNAME_SIZE];
+char server_ip[MAX_SERVER_IP_SIZE + 1];
+char hostname[MAX_HOSTNAME_SIZE + 1];
 
 uint16_t server_port = 8883;
 
