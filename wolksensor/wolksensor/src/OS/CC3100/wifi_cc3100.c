@@ -51,7 +51,7 @@ static char cc3100_static_mask[MAX_WIFI_STATIC_MASK_SIZE];
 static char cc3100_static_gateway[MAX_WIFI_STATIC_GATEWAY_SIZE];
 static char cc3100_static_dns[MAX_WIFI_STATIC_DNS_SIZE];
 
-char server_ip[MAX_SERVER_IP_SIZE];
+char server_ip[MAX_SERVER_IP_SIZE + 1];
 tcp_communication_module_data_t tcp_communication_module_data;
 
 static volatile bool fast_connect = false;
