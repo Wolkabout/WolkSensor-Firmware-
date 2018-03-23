@@ -21,8 +21,8 @@ extern "C"
 #define MAX_WIFI_STATIC_GATEWAY_SIZE 30
 #define MAX_WIFI_STATIC_DNS_SIZE 30
 
-#define MAX_SERVER_IP_SIZE 30
-#define MAX_HOSTNAME_SIZE 30
+#define MAX_SERVER_IP_SIZE 29
+#define MAX_HOSTNAME_SIZE 29
 
 #define DEFAULT_SYSTEM_HEARTBEAT 10
 
@@ -108,8 +108,8 @@ extern bool ssl;
 
 extern unsigned char mac_address_nwmem[6];
 
-extern char server_ip[MAX_SERVER_IP_SIZE];
-extern char hostname[MAX_HOSTNAME_SIZE];
+extern char server_ip[MAX_SERVER_IP_SIZE + 1];
+extern char hostname[MAX_HOSTNAME_SIZE + 1];
 
 extern uint16_t server_port;
 

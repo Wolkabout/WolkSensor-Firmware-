@@ -43,7 +43,7 @@ sensor_t;
 typedef struct
 {
 	char id;
-	int16_t value;
+	float value;
 }
 sensor_state_t;
 

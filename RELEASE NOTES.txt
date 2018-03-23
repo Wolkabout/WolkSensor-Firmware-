@@ -10,6 +10,9 @@
 WolkSensor is a device with built-in temperature, pressure, humidity and movement sensor.
 List of Firmware Release Versions for WolkSensor device in WolkSensor.bin file:
 
+**Version 4.3.0**
+- [NEW] Send P,T,H Readings as decimal value
+
 **Version 4.2.0**
 - [NEW] Connectivity to WolkAbout Platform v2.0 
 

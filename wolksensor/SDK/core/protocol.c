@@ -51,7 +51,7 @@ static uint16_t serialize_sensor_reading(sensor_readings_t* sensor_reading, char
 	{
 		if(sensor_reading->values[i] != SENSOR_VALUE_NOT_SET)
 		{
-			size += sprintf_P(buffer + size, PSTR("%c:%d,"), sensors[i].id, sensor_reading->values[i]);
+			size += sprintf_P(buffer + size, PSTR("%c:%.2f,"), sensors[i].id, sensor_reading->values[i]);
 		}
 	}
 	
