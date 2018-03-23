@@ -512,7 +512,7 @@ bool init_wifi(void)
 		
 		return false;
 	}
-	
+
 	unsigned char mac_address_length = SL_MAC_ADDR_LEN;
 	if(sl_NetCfgGet(SL_MAC_ADDRESS_GET,NULL, &mac_address_length, (unsigned char *)mac_address_nwmem) < 0)
 	{
@@ -568,7 +568,7 @@ bool init_wifi(void)
 
 		return false;
 	}
-	
+
 	SetTime();
 	
 	update_ca_cert();
@@ -916,6 +916,8 @@ int wifi_open_socket(char* address, uint16_t port, bool secure)
 
 	socket_address_in.sin_addr.s_addr = sl_Htonl((uint32_t)ip_address);
 	
+	SetTime();//Solution
+
 	uint8_t retries = 0;
 	int16_t connect_result = -1; 
 	while((retries++ < 200) && ((connect_result = sl_Connect(socket_id, (SlSockAddr_t*)&socket_address_in, sizeof(SlSockAddrIn_t))) != 0))
