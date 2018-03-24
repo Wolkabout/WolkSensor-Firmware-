@@ -34,7 +34,7 @@ bool location = false;
 char mqtt_username[MQTT_USERNAME_SIZE];
 char mqtt_password[MQTT_PASSWORD_SIZE];
 
-uint32_t atmo_offset[3];
+int16_t atmo_offset[3];
 uint32_t atmo_offset_factory[5];
 
 bool load_device_id(void)
