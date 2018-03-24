@@ -31,12 +31,12 @@ extern "C"
 
 #define MAX_PORT_NUMBER	65535
 
-#define TEMPERATURE_OFFSET_MIN	-20
-#define TEMPERATURE_OFFSET_MAX	37
-#define HUMIDITY_OFFSET_MIN		-30
-#define HUMIDITY_OFFSET_MAX		30
-#define PRESSURE_OFFSET_MIN		-100
-#define PRESSURE_OFFSET_MAX		100
+#define TEMPERATURE_OFFSET_MIN	-2.0f
+#define TEMPERATURE_OFFSET_MAX	3.7f
+#define HUMIDITY_OFFSET_MIN		-3.0f
+#define HUMIDITY_OFFSET_MAX		3.0f
+#define PRESSURE_OFFSET_MIN		-10.0f
+#define PRESSURE_OFFSET_MAX		10.0
 
 typedef enum
 {
@@ -121,7 +121,7 @@ extern bool location;
 extern char mqtt_username[MQTT_USERNAME_SIZE];
 extern char	mqtt_password[MQTT_PASSWORD_SIZE];
 
-extern int16_t atmo_offset[3];
+extern float atmo_offset[3];
 extern uint32_t atmo_offset_factory[5];
 
 bool load_device_id(void);

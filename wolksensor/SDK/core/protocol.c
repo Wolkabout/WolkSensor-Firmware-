@@ -759,21 +759,21 @@ bool append_mqtt_password(char* password, circular_buffer_t* response_buffer)
 
 bool append_temp_offset(uint16_t offset, circular_buffer_t* message_buffer)
 {
-	sprintf_P(tmp, PSTR("TEMP_OFFSET %d;"), atmo_offset[0]);
+	sprintf_P(tmp, PSTR("TEMP_OFFSET %0.2f;"), atmo_offset[0]);
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }
 
 bool append_humidity_offset(uint16_t offset, circular_buffer_t* message_buffer)
 {
-	sprintf_P(tmp, PSTR("HUMIDITY_OFFSET %d;"), atmo_offset[2]);
+	sprintf_P(tmp, PSTR("HUMIDITY_OFFSET %0.2f;"), atmo_offset[2]);
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }
 
 bool append_pressure_offset(uint16_t offset, circular_buffer_t* message_buffer)
 {
-	sprintf_P(tmp, PSTR("PRESSURE_OFFSET %d;"), atmo_offset[1]);
+	sprintf_P(tmp, PSTR("PRESSURE_OFFSET %0.2f;"), atmo_offset[1]);
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }
