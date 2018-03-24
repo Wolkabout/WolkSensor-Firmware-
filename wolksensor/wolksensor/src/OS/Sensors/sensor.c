@@ -47,7 +47,10 @@ void init_sensors(void)
 static bool get_pressure(float *value)
 {
 	*value = BME280_GetPressure();
-	*value += atmo_offset[1]/10;
+	LOG_PRINT(1, PSTR("-pressure value after read: %0.2f \n\r"), *value);
+	LOG_PRINT(1, PSTR("-pressure atmo_offset: %0.2f \n\r"), atmo_offset[1]);
+	*value += atmo_offset[1];
+	LOG_PRINT(1, PSTR("-pressure value after +=: %0.2f \n\r"), *value);
 
 	if( (*value > PRESSURE_OPERATING_RANGE_MAX/10) || (*value < PRESSURE_OPERATING_RANGE_MIN/10) )
 	{
@@ -61,7 +64,10 @@ static bool get_pressure(float *value)
 static bool get_temperature(float *value)
 {
 	*value = BME280_GetTemperature();
-	*value += atmo_offset[0]/10;
+	LOG_PRINT(1, PSTR("--temperature value after read: %0.2f \n\r"), *value);
+	LOG_PRINT(1, PSTR("--temperature atmo_offset: %0.2f \n\r"), atmo_offset[0]);
+	*value += atmo_offset[0];
+	LOG_PRINT(1, PSTR("--temperature value after +=: %0.2f \n\r"), *value);
 
 	if( (*value > TEMPERATURE_OPERATING_RANGE_MAX/10) || (*value < TEMPERATURE_OPERATING_RANGE_MIN/10) )
 	{
@@ -75,7 +81,10 @@ static bool get_temperature(float *value)
 static bool get_humidity(float *value)
 {
 	*value = BME280_GetHumidity();
-	*value += atmo_offset[2]/10;
+	LOG_PRINT(1, PSTR("---humidity value after read: %0.2f \n\r"), *value);
+	LOG_PRINT(1, PSTR("---humidity atmo_offset: %0.2f \n\r"), atmo_offset[2]);
+	*value += atmo_offset[2];
+	LOG_PRINT(1, PSTR("---humidity value after +=: %0.2f \n\r"), *value);
 
 	if( (*value > HUMIDITY_OPERATING_RANGE_MAX/10) || (*value < HUMIDITY_OPERATING_RANGE_MIN/10) )
 	{

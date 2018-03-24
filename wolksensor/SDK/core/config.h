@@ -122,7 +122,7 @@ extern char mqtt_username[MQTT_USERNAME_SIZE];
 extern char	mqtt_password[MQTT_PASSWORD_SIZE];
 
 extern float atmo_offset[3];
-extern uint32_t atmo_offset_factory[5];
+extern float atmo_offset_factory[5];
 
 bool load_device_id(void);
 bool load_device_preshared_key(void);

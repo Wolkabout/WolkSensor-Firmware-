@@ -788,10 +788,10 @@ bool append_offset_factory(char* offset_factory, circular_buffer_t* message_buff
 	{
 		static char array[6];
 
-		sprintf_P(tmp, PSTR("OFFSET_FACTORY P:%d,"), atmo_offset_factory[1]);
-		sprintf_P(array, PSTR("T:%d,"), atmo_offset_factory[0]);
+		sprintf_P(tmp, PSTR("OFFSET_FACTORY P:%0.2f,"), atmo_offset_factory[1]);
+		sprintf_P(array, PSTR("T:%0.2f,"), atmo_offset_factory[0]);
 		strcat(tmp, array);
-		sprintf_P(array, PSTR("H:%d;"), atmo_offset_factory[2]);
+		sprintf_P(array, PSTR("H:%0.2f;"), atmo_offset_factory[2]);
 		strcat(tmp, array);
 
 		LOG_PRINT(1, PSTR("tmp: %s \n\r"), tmp);

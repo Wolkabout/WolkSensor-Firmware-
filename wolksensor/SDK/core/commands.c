@@ -576,7 +576,7 @@ command_execution_result_t cmd_temp_offset(command_t* command, circular_buffer_t
 			atmo_offset_factory[3] = 1;
 			atmo_offset_factory[0] = command->argument.float_argument;
 			if(global_dependencies.config_write(atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
-				LOG_PRINT(1, PSTR("Factory temperature offset is written: %d \n\r"), atmo_offset_factory[0]);
+				LOG_PRINT(1, PSTR("Factory temperature offset is written: %0.2f \n\r"), atmo_offset_factory[0]);
 		}
 		atmo_offset[0] = command->argument.float_argument;
 		if(global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
