@@ -65,12 +65,6 @@ def data_driven():
 
     logging_device.info("------------------- R\W parameters -------------------")
 
-    logging_device.info("\n\r\t\t-------- URL --------")
-    if not test('URL', ['8.8.8.8', '0.0.0.0', '255.255.255.255', 'appwolksense.com', 'app-wolksense.com', '9gag.com', 'automatika.ftn.uns.ac.rs', 'ftn.uns.ac.rs', constants.URL, constants.HOSTNAME], ['', '-1.-1.-1.-1', '256.256.256.256',\
-    'appwolksense', '-app.wolksense', 'app.wolksense-', 'app.wolksense*com', '9821.com.123', '9gag.123.com', 'abc.123.abc.abc', 'app.wolksense.comapp.wolksense.comapp.wolksense.comapp.wolksense.comapp.wolksense.com' , '\Test1234', '!")(*&^%;']):
-        return_value = False
-        logging_device.error("Return value is %s" %return_value)
-
     logging_device.info("\n\r\t\t-------- SSID --------")
     if not test('SSID', ['mywirelessnetwork', '1234567890', 'm4w1r3l3ssn3tw0rk', 'qwertyuiopqwertyuiopqwertyuiopqw', '' , '!")(*&^%', '\n\r', 'WA_1'], ['qwertyuiopqwertyuiopqwertyuiopqwe']):
         return_value = False
@@ -87,6 +81,18 @@ def data_driven():
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
+    logging_device.info("\n\r\t\t-------- URL --------")
+    if not test('URL', ['8.8.8.8', '0.0.0.0', '255.255.255.255', 'appwolksense.com', 'app-wolksense.com', '9gag.com', 'automatika.ftn.uns.ac.rs', 'ftn.uns.ac.rs', constants.URL, constants.HOSTNAME], ['', '-1.-1.-1.-1', '256.256.256.256',\
+    'appwolksense', '-app.wolksense', 'app.wolksense-', 'app.wolksense*com', '9821.com.123', '9gag.123.com', 'abc.123.abc.abc', 'app.wolksense.comapp.wolksense.comapp.wolksense.comapp.wolksense.comapp.wolksense.com' , '\Test1234', '!")(*&^%;']):
+        return_value = False
+        logging_device.error("Return value is %s" %return_value)
+
+    logging_device.info("\n\r\t\t-------- PORT --------")
+    if not test('PORT', ['1883', '0', '65535', '8883'], ['', '-5', '65536', 'mynetworkport', 'm4n3tw0rkp0rt', '!")(*&^%', '0123456789012345678901234567890123456789012345678901234567890123456789', \
+    'qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwer']):
+        return_value = False
+        logging_device.error("Return value is %s" %return_value)
+
     if not test('AUTH', ['WEP'], []):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
@@ -99,13 +105,7 @@ def data_driven():
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.info("\n\r\t\t-------- RTC --------")
-    if not test('RTC', ['0', '1470236756', '4294967295', '1388588755'], ['', '-1', '12345678901234567890123456789', 'timecountdown', 't1m3c0u5td0wn', '!")(*&^%']):
-        return_value = False
-        logging_device.error("Return value is %s" %return_value)
-
-    logging_device.info("\n\r\t\t-------- PORT --------")
-    if not test('PORT', ['1883', '0', '65535', '8883'], ['', '-5', '65536', 'mynetworkport', 'm4n3tw0rkp0rt', '!")(*&^%', '0123456789012345678901234567890123456789012345678901234567890123456789', \
-    'qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwer']):
+    if not test('RTC', ['0', '1470236756', '4294967295', constants.RTC], ['', '-1', '12345678901234567890123456789', 'timecountdown', 't1m3c0u5td0wn', '!")(*&^%']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
@@ -181,11 +181,6 @@ def data_driven():
     if not test('ACQUISITION', [], ['empty', 'CLEAR', '', '-1.pressure.+1.QWE', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-
-    if not set_wifi_parameters('WA_1', 'WPA2', 'wolksensorsystem'):
-        return_value = False
-        logging_device.error("Return value is %s" %return_value)
-
 
     logging_device.log("\n\r")
     return return_value
