@@ -307,7 +307,7 @@ bool load_offset_status(void)
 {
 	if (global_dependencies.config_read(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
 	{
-		LOG_PRINT(1, PSTR("Temperature offset is written: %d \n\rPressure offset is written: %d \n\rHumidity offset is written: %d \n\r"), atmo_offset[0], atmo_offset[1], atmo_offset[2]);
+		LOG_PRINT(1, PSTR("Temperature offset is written: %g \n\rPressure offset is written: %g \n\rHumidity offset is written: %g \n\r"), atmo_offset[0], atmo_offset[1], atmo_offset[2]);
 		return true;
 	}
 

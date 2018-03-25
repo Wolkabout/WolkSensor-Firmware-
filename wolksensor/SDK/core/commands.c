@@ -580,7 +580,7 @@ command_execution_result_t cmd_temp_offset(command_t* command, circular_buffer_t
 		}
 		atmo_offset[0] = command->argument.float_argument;
 		if(global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
-			LOG_PRINT(1, PSTR("Temperature offset is written: %0.2f \n\r"), atmo_offset[0]);
+			LOG_PRINT(1, PSTR("Temperature offset is written: %g \n\r"), atmo_offset[0]);
 	}
 
 	append_temp_offset(atmo_offset[0], response_buffer);
@@ -657,9 +657,9 @@ command_execution_result_t cmd_offset_factory(command_t* command, circular_buffe
 
 			if(global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
 			{
-				LOG_PRINT(1, PSTR("Temperature offset is written: %d \n\r"), atmo_offset[0]);
-				LOG_PRINT(1, PSTR("Pressure offset is written: %d \n\r"), atmo_offset[1]);
-				LOG_PRINT(1, PSTR("Humidity offset is written: %d \n\r"), atmo_offset[2]);
+				LOG_PRINT(1, PSTR("Temperature offset is written: %g"), atmo_offset[0]);
+				LOG_PRINT(1, PSTR("Pressure offset is written: %g"), atmo_offset[1]);
+				LOG_PRINT(1, PSTR("Humidity offset is written: %g \n\r"), atmo_offset[2]);
 			}
 			else
 				LOG(1, "Failed to write offset factory settings into offset eeprom");
