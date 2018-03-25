@@ -158,17 +158,17 @@ def data_driven():
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.info("\n\r\t\t-------- TEMP_OFFSET --------")
-    if not test('TEMP_OFFSET', ['0', '1', '-1', '37', '-20'], ['38', '-21', '', '-1.temperature.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
+    if not test('TEMP_OFFSET', ['0', '1.01', '-1', '3.7', '-2'], ['38.23', '-21.879', '', '-1.temperature.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.info("\n\r\t\t-------- HUMIDITY_OFFSET --------")
-    if not test('HUMIDITY_OFFSET', ['0', '1', '-1', '30', '-30'], ['31', '-31', '', '-1.humidity.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
+    if not test('HUMIDITY_OFFSET', ['0', '1.23', '-1', '3.00', '-3.0'], ['31', '-31', '', '-1.humidity.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.info("\n\r\t\t-------- PRESSURE_OFFSET --------")
-    if not test('PRESSURE_OFFSET', ['0', '1', '-1', '100', '-100'], ['101', '-101', '', '-1.pressure.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
+    if not test('PRESSURE_OFFSET', ['0', '1.2', '-1.23', '10.0', '-10.00'], ['101', '-101', '', '-1.pressure.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
