@@ -159,7 +159,7 @@ def flow_states():
     logging_device.log("%s, %s, %s" %(pressure, temp, humidity))
 
     logging_device.log("\tSET NEW OFFSET VALUES")
-    if not set_offset(10, 20, 30):
+    if not set_offset(1, 2, 3):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
     if not parse_readings('CLEAR', "show"):
@@ -333,7 +333,7 @@ def flow_states():
     while not set_wifi_parameters('NULL', 'NONE', 'NULL'): pass
     wait_dev_state_idle()
 
-    if not set_offset(-10, -5, 15):
+    if not set_offset(-10, -2, 1.5):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
