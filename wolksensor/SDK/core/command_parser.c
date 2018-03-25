@@ -317,6 +317,9 @@ static bool parse_commad_argument(command_t* command, char* argument)
 		case COMMAND_HUMIDITY_OFFSET:
 		case COMMAND_PRESSURE_OFFSET:
 		{
+			if (strlen(argument)>(MAX_INT_LENGTH+1))
+				return false;
+
 			float value = atof(argument);
 			command->argument.float_argument = value;
 			return true;

@@ -14,17 +14,17 @@
 bool is_string_numeric(const char *str)
 {
 	if (*str == '-')
-	++str;
+		++str;
 
 	if (!*str)
-	return false;
+		return false;
 
 	while (*str)
 	{
 		if (!isdigit(*str))
-		return false;
+			return false;
 		else
-		++str;
+			++str;
 	}
 
 	return true;
