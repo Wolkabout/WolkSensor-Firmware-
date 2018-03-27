@@ -10,6 +10,10 @@
 WolkSensor is a device with built-in temperature, pressure, humidity and movement sensor.
 List of Firmware Release Versions for WolkSensor device in WolkSensor.bin file:
 
+**Version 4.3.4**
+- [BUGFIX] "nan" for OFFSET_FACTORY's while read from eeprom changed with 0,0,0 as default offset factory values
+- [NEW] New decimal numbers scale is 1. Example T:20.1
+
 **Version 4.3.3**
 - [BUGFIX] Update certification time on every connection to the platform
 - [BUGFIX] Reject values for offset which are not decimal
