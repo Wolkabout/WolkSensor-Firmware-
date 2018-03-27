@@ -44,7 +44,7 @@ def flow_states():
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
-
+    '''
     logging_device.info("\n\r\t\t-------- set Wifi with WPA secure --------")
     if not set_wifi_parameters('WolkSensorWlan2', 'WPA', 'WolkSensorFabrication'):
         return_value = False
@@ -71,7 +71,7 @@ def flow_states():
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
-
+    '''
     logging_device.log("\t---False flow---")
     if not set_wifi_parameters('my0penwl4n', 'NONE', 'NULL'):
         return_value = False
@@ -200,7 +200,7 @@ def flow_states():
     logging_device.log("\t -->MOVE WolkSensor to continue testing<--")
     send_string_serial_wait("READINGS;")
     received_string = receive_string_serial()
-    while ",M:1.00;" not in received_string:
+    while ",M:1.0;" not in received_string:
         send_string_serial_wait("READINGS;")
         received_string = receive_string_serial()
     time.sleep(0.5)
