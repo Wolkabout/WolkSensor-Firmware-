@@ -307,7 +307,7 @@ bool load_offset_status(void)
 {
 	if (global_dependencies.config_read(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
 	{
-		LOG_PRINT(1, PSTR("Temperature offset is written: %g \n\rPressure offset is written: %g \n\rHumidity offset is written: %g \n\r"), atmo_offset[0], atmo_offset[1], atmo_offset[2]);
+		LOG_PRINT(1, PSTR("Temperature offset is written: %.1f \n\rPressure offset is written: %.1f \n\rHumidity offset is written: %.1f \n\r"), atmo_offset[0], atmo_offset[1], atmo_offset[2]);
 		return true;
 	}
 
@@ -323,7 +323,16 @@ bool load_offset_factory_status(void)
 {
 	if(global_dependencies.config_read(&atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
 	{
-		LOG_PRINT(1, PSTR("Temperature offset factory is written: %0.2f \n\rPressure offset factory is written: %0.2f \n\rHumidity offset factory is written: %0.2f \n\r"), atmo_offset_factory[0], atmo_offset_factory[1], atmo_offset_factory[2]);
+		if( isnan(atmo_offset_factory[0])  || isnan(atmo_offset_factory[1]) || isnan(atmo_offset_factory[2]) )
+		{
+			LOG(1, "Could not read Temperature offset factory status, defaulting to 0 \n\rCould not read Pressure offset factory status, defaulting to 0 \n\rCould not read Humidity offset factory status, defaulting to 0");
+			atmo_offset_factory[0] = 0;
+			atmo_offset_factory[1] = 0;
+			atmo_offset_factory[2] = 0;
+
+			return false;
+		}
+
 		return true;
 	}
 
