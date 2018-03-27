@@ -17,9 +17,9 @@ COMPORTNAME  = 'USB Serial Port'
 VID          = 'VID_0403'
 PID          = 'PID_6015'
 
-SSID         = "theHome"
+SSID         = "wolkabout"
 AUTH         = "WPA2"
-PASS         = "Welcome26"
+PASS         = "Walkm3int0"
 
 URL          = '52.213.16.227'
 HOSTNAME     = 'api-demo.wolkabout.com'

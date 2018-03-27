@@ -158,17 +158,17 @@ def data_driven():
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.info("\n\r\t\t-------- TEMP_OFFSET --------")
-    if not test('TEMP_OFFSET', ['0', '2', '-1', '1.1', '1.76', '-1.5', '-0.92', '3.7', '-2'], ['3.71', '-2.01', '38.23', '-21.879', '', '-1.temperature.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
+    if not test('TEMP_OFFSET', ['0.0', '2.0', '-1.0', '1.1', '1.7', '-1.5', '-0.9', '3.7', '-2.0'], ['3.71', '-2.01', '38.23', '-21.879', '', '-1.temperature.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.info("\n\r\t\t-------- HUMIDITY_OFFSET --------")
-    if not test('HUMIDITY_OFFSET', ['0', '2', '-1', '1.3', '1.23', '-1.9', '-2.97', '3', '-3'], ['3.1', '-3.1', '78.12', '', '-1.humidity.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
+    if not test('HUMIDITY_OFFSET', ['0.0', '2.0', '-1.0', '1.3', '1.3', '-1.9', '-2.9', '3.0', '-3.0'], ['3.1', '-3.1', '78.12', '', '-1.humidity.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
     logging_device.info("\n\r\t\t-------- PRESSURE_OFFSET --------")
-    if not test('PRESSURE_OFFSET', ['0', '2', '-8', '8.2', '1.25', '-2.6', '-1.23', '10', '-10'], ['10.1', '-10.1', '94.65', '', '-1.pressure.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
+    if not test('PRESSURE_OFFSET', ['0.0', '2.0', '-8.0', '8.2', '1.5', '-2.6', '-1.3', '10.0', '-10.0'], ['10.1', '-10.1', '94.65', '', '-1.pressure.+1.QWE', 'app.wolkabout.com', '\Test1234', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
@@ -181,7 +181,7 @@ def data_driven():
     if not test('ACQUISITION', [], ['empty', 'CLEAR', '', '-1.pressure.+1.QWE', '!")(*&^%;']):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
-
+    
     logging_device.log("\n\r")
     return return_value
 

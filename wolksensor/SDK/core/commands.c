@@ -576,11 +576,11 @@ command_execution_result_t cmd_temp_offset(command_t* command, circular_buffer_t
 			atmo_offset_factory[3] = 1;
 			atmo_offset_factory[0] = command->argument.float_argument;
 			if(global_dependencies.config_write(atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
-				LOG_PRINT(1, PSTR("Factory temperature offset is written: %0.2f \n\r"), atmo_offset_factory[0]);
+				LOG_PRINT(1, PSTR("Factory temperature offset is written: %.1f \n\r"), atmo_offset_factory[0]);
 		}
 		atmo_offset[0] = command->argument.float_argument;
 		if(global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
-			LOG_PRINT(1, PSTR("Temperature offset is written: %g \n\r"), atmo_offset[0]);
+			LOG_PRINT(1, PSTR("Temperature offset is written: %.1f \n\r"), atmo_offset[0]);
 	}
 
 	append_temp_offset(atmo_offset[0], response_buffer);
@@ -604,10 +604,11 @@ command_execution_result_t cmd_humidity_offset(command_t* command, circular_buff
 			atmo_offset_factory[4] = 1;
 			atmo_offset_factory[2] = command->argument.float_argument;
 			if(global_dependencies.config_write(atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
-			LOG_PRINT(1, PSTR("Factory temperature offset is written: %0.2f \n\r"), atmo_offset_factory[2]);
+			LOG_PRINT(1, PSTR("Factory temperature offset is written: %.1f \n\r"), atmo_offset_factory[2]);
 		}
 		atmo_offset[2] = command->argument.float_argument;
-		global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset));
+		if(global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
+			LOG_PRINT(1, PSTR("Humidity offset is written: %.1f \n\r"), atmo_offset[2]);
 	}
 
 	append_humidity_offset(atmo_offset[2], response_buffer);
@@ -631,10 +632,11 @@ command_execution_result_t cmd_pressure_offset(command_t* command, circular_buff
 			atmo_offset_factory[5] = 1;
 			atmo_offset_factory[1] = command->argument.float_argument;
 			if(global_dependencies.config_write(atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
-			LOG_PRINT(1, PSTR("Factory temperature offset is written: %0.2f \n\r"), atmo_offset_factory[1]);
+			LOG_PRINT(1, PSTR("Factory temperature offset is written: %.1f \n\r"), atmo_offset_factory[1]);
 		}
 		atmo_offset[1] = command->argument.float_argument;
-		global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset));
+		if(global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
+		    LOG_PRINT(1, PSTR("Pressure offset is written: %.1f \n\r"), atmo_offset[1]);
 	}
 
 	append_pressure_offset(atmo_offset[1], response_buffer);
@@ -657,9 +659,9 @@ command_execution_result_t cmd_offset_factory(command_t* command, circular_buffe
 
 			if(global_dependencies.config_write(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
 			{
-				LOG_PRINT(1, PSTR("Temperature offset is written: %g"), atmo_offset[0]);
-				LOG_PRINT(1, PSTR("Pressure offset is written: %g"), atmo_offset[1]);
-				LOG_PRINT(1, PSTR("Humidity offset is written: %g \n\r"), atmo_offset[2]);
+				LOG_PRINT(1, PSTR("Temperature offset is written: %.1f\n\r"), atmo_offset[0]);
+				LOG_PRINT(1, PSTR("Pressure offset is written: %.1f\n\r"), atmo_offset[1]);
+				LOG_PRINT(1, PSTR("Humidity offset is written: %.1f \n\r"), atmo_offset[2]);
 			}
 			else
 				LOG(1, "Failed to write offset factory settings into offset eeprom");

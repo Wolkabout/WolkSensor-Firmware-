@@ -45,7 +45,6 @@ def flow_states():
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
 
-    '''
     logging_device.info("\n\r\t\t-------- set Wifi with WPA secure --------")
     if not set_wifi_parameters('WolkSensorWlan2', 'WPA', 'WolkSensorFabrication'):
         return_value = False
@@ -72,7 +71,6 @@ def flow_states():
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
-    '''
 
     logging_device.log("\t---False flow---")
     if not set_wifi_parameters('my0penwl4n', 'NONE', 'NULL'):

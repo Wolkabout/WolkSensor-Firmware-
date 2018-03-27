@@ -317,7 +317,7 @@ static bool parse_commad_argument(command_t* command, char* argument)
 		case COMMAND_HUMIDITY_OFFSET:
 		case COMMAND_PRESSURE_OFFSET:
 		{
-			if (strlen(argument)>(MAX_INT_LENGTH+1) || !is_string_decimal_numeric(argument))
+			if (strlen(argument)>(MAX_INT_LENGTH) || !is_string_decimal_numeric(argument))
 				return false;
 
 			float value = atof(argument);
