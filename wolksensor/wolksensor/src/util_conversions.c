@@ -57,7 +57,7 @@ bool is_string_decimal_numeric(const char *str)
 			++str;
 	}
 
-	if( number_of_dots>1 )
+	if(number_of_dots > 1)
 		return false;
 
 	return true;
