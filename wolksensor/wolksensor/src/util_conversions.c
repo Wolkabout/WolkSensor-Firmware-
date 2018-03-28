@@ -14,18 +14,51 @@
 bool is_string_numeric(const char *str)
 {
 	if (*str == '-')
-	++str;
+		++str;
 
 	if (!*str)
-	return false;
+		return false;
 
 	while (*str)
 	{
 		if (!isdigit(*str))
-		return false;
+			return false;
 		else
-		++str;
+			++str;
 	}
+
+	return true;
+}
+
+bool is_string_decimal_numeric(const char *str)
+{
+	char number_of_dots = 0;
+	if (*str == '-')
+		++str;
+
+	if (!*str)
+		return false;
+
+	while (*str)
+	{
+		if (!isdigit(*str))
+		{
+			if(*str == '.')
+			{
+				if(strlen(str)==1)
+					return false;
+				++str;
+				++number_of_dots;
+			}
+			else
+				return false;
+		}
+		else
+			++str;
+	}
+
+	if( number_of_dots>1 )
+		return false;
 
 	return true;
 }

@@ -759,21 +759,21 @@ bool append_mqtt_password(char* password, circular_buffer_t* response_buffer)
 
 bool append_temp_offset(uint16_t offset, circular_buffer_t* message_buffer)
 {
-	sprintf_P(tmp, PSTR("TEMP_OFFSET %d;"), atmo_offset[0]);
+	sprintf_P(tmp, PSTR("TEMP_OFFSET %g;"), atmo_offset[0]);
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }
 
 bool append_humidity_offset(uint16_t offset, circular_buffer_t* message_buffer)
 {
-	sprintf_P(tmp, PSTR("HUMIDITY_OFFSET %d;"), atmo_offset[2]);
+	sprintf_P(tmp, PSTR("HUMIDITY_OFFSET %g;"), atmo_offset[2]);
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }
 
 bool append_pressure_offset(uint16_t offset, circular_buffer_t* message_buffer)
 {
-	sprintf_P(tmp, PSTR("PRESSURE_OFFSET %d;"), atmo_offset[1]);
+	sprintf_P(tmp, PSTR("PRESSURE_OFFSET %g;"), atmo_offset[1]);
 	circular_buffer_add_array(message_buffer, tmp, strlen(tmp));
 	return true;
 }
@@ -788,10 +788,10 @@ bool append_offset_factory(char* offset_factory, circular_buffer_t* message_buff
 	{
 		static char array[6];
 
-		sprintf_P(tmp, PSTR("OFFSET_FACTORY P:%d,"), atmo_offset_factory[1]);
-		sprintf_P(array, PSTR("T:%d,"), atmo_offset_factory[0]);
+		sprintf_P(tmp, PSTR("OFFSET_FACTORY P:%g,"), atmo_offset_factory[1]);
+		sprintf_P(array, PSTR("T:%g,"), atmo_offset_factory[0]);
 		strcat(tmp, array);
-		sprintf_P(array, PSTR("H:%d;"), atmo_offset_factory[2]);
+		sprintf_P(array, PSTR("H:%g;"), atmo_offset_factory[2]);
 		strcat(tmp, array);
 
 		LOG_PRINT(1, PSTR("tmp: %s \n\r"), tmp);

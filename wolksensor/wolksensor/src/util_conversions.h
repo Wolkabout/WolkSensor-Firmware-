@@ -11,6 +11,7 @@
 
 
 bool is_string_numeric(const char *str);
+bool is_string_decimal_numeric(const char *str);
 void hexstring_to_asciistring( unsigned char* dest, const unsigned char *text );
 void asciistring_to_hexstring( unsigned char* dest, const unsigned char *text );
 bool is_string_hex(char *text);

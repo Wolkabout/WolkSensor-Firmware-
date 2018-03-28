@@ -75,6 +75,7 @@ set_argument_t;
 typedef union
 {
 	uint32_t uint32_argument;
+	float float_argument;
 	uint16_t uint16_argument;
 	char string_argument[COMMAND_ARGUMENT_MAX_LENGTH];
 	bool bool_argument;

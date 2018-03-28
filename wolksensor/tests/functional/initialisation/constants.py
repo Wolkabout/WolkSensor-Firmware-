@@ -8,14 +8,23 @@ Last Modified on July 29th 2016
 brief:  list of constant values
 '''
 
+BLESSERVERSIONMAJOR = 2
+BLESSERVERSIONMINOR = 0
+BLESSERVERSIONPATCH = 0
+
 MANUFACTURER = 'FTDIBUS'
 COMPORTNAME  = 'USB Serial Port'
 VID          = 'VID_0403'
 PID          = 'PID_6015'
 
-URL          = '52.30.233.2'
-HOSTNAME     = 'app.wolksense.com'
+SSID         = "theHome"
+AUTH         = "WPA2"
+PASS         = "Welcome26"
+
+URL          = '52.213.16.227'
+HOSTNAME     = 'api-demo.wolkabout.com'
 PORT         = '8883'
+RTC          = '1514824768' #1st January 2018.
 
 TIMESTAMPSTRING     = 'R:'
 PRESSURESTRING      = 'P:'
@@ -42,7 +51,7 @@ FILEBIN           = 'bin\wolksensor_cc3100_sensors.bin'
 FILEBLESSED       = 'BlessedDevices.csv'
 FILESERIALNUMBERS = '0116WS10Series.csv'
 
-NAME = 'Blesser Tool'
+NAME = 'Functional Tests'
 LOGO = '    _    _       _ _    _____                           \
    \n\r   | |  | |     | | |  /  ___|                          \
    \n\r   | |  | | ___ | | | _\ `--.  ___ _ __  ___  ___  _ __ \

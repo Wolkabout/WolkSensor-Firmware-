@@ -310,11 +310,19 @@ static bool parse_commad_argument(command_t* command, char* argument)
 		}
 		case COMMAND_HEARTBEAT:
 		case COMMAND_PORT:
+		{
+			return parse_numeric_argument(command, argument);
+		}
 		case COMMAND_TEMP_OFFSET:
 		case COMMAND_HUMIDITY_OFFSET:
 		case COMMAND_PRESSURE_OFFSET:
 		{
-			return parse_numeric_argument(command, argument);
+			if (strlen(argument)>(MAX_INT_LENGTH+1) || !is_string_decimal_numeric(argument))
+				return false;
+
+			float value = atof(argument);
+			command->argument.float_argument = value;
+			return true;
 		}
 		case COMMAND_RTC:
 		{

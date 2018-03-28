@@ -47,7 +47,7 @@ void init_sensors(void)
 static bool get_pressure(float *value)
 {
 	*value = BME280_GetPressure();
-	*value += atmo_offset[1]/10;
+	*value += atmo_offset[1];
 
 	if( (*value > PRESSURE_OPERATING_RANGE_MAX/10) || (*value < PRESSURE_OPERATING_RANGE_MIN/10) )
 	{
@@ -61,7 +61,7 @@ static bool get_pressure(float *value)
 static bool get_temperature(float *value)
 {
 	*value = BME280_GetTemperature();
-	*value += atmo_offset[0]/10;
+	*value += atmo_offset[0];
 
 	if( (*value > TEMPERATURE_OPERATING_RANGE_MAX/10) || (*value < TEMPERATURE_OPERATING_RANGE_MIN/10) )
 	{
@@ -75,7 +75,7 @@ static bool get_temperature(float *value)
 static bool get_humidity(float *value)
 {
 	*value = BME280_GetHumidity();
-	*value += atmo_offset[2]/10;
+	*value += atmo_offset[2];
 
 	if( (*value > HUMIDITY_OPERATING_RANGE_MAX/10) || (*value < HUMIDITY_OPERATING_RANGE_MIN/10) )
 	{

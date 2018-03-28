@@ -34,8 +34,8 @@ bool location = false;
 char mqtt_username[MQTT_USERNAME_SIZE];
 char mqtt_password[MQTT_PASSWORD_SIZE];
 
-uint32_t atmo_offset[3];
-uint32_t atmo_offset_factory[5];
+float atmo_offset[3];
+float atmo_offset_factory[5];
 
 bool load_device_id(void)
 {
@@ -307,7 +307,7 @@ bool load_offset_status(void)
 {
 	if (global_dependencies.config_read(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
 	{
-		LOG_PRINT(1, PSTR("Temperature offset is written: %d \n\rPressure offset is written: %d \n\rHumidity offset is written: %d \n\r"), atmo_offset[0], atmo_offset[1], atmo_offset[2]);
+		LOG_PRINT(1, PSTR("Temperature offset is written: %g \n\rPressure offset is written: %g \n\rHumidity offset is written: %g \n\r"), atmo_offset[0], atmo_offset[1], atmo_offset[2]);
 		return true;
 	}
 
@@ -323,7 +323,7 @@ bool load_offset_factory_status(void)
 {
 	if(global_dependencies.config_read(&atmo_offset_factory, CFG_OFFSET_FACTORY, 1, sizeof(atmo_offset_factory)))
 	{
-		LOG_PRINT(1, PSTR("Temperature offset factory is written: %d \n\rPressure offset factory is written: %d \n\rHumidity offset factory is written: %d \n\r"), atmo_offset_factory[0], atmo_offset_factory[1], atmo_offset_factory[2]);
+		LOG_PRINT(1, PSTR("Temperature offset factory is written: %0.2f \n\rPressure offset factory is written: %0.2f \n\rHumidity offset factory is written: %0.2f \n\r"), atmo_offset_factory[0], atmo_offset_factory[1], atmo_offset_factory[2]);
 		return true;
 	}
 

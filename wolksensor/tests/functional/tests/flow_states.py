@@ -30,9 +30,9 @@ from device_wlan_set import set_wifi_parameters
 
 def flow_states():
     return_value = True
-
+    
     logging_device.info("\n\r\t\t   Flow States Testing\n\r***************************************************************\n\r")
-    while not set_wifi_parameters('wolkabout', 'WPA2', 'Walkm3int0'): pass
+    while not set_wifi_parameters(constants.SSID, constants.AUTH, constants.PASS): pass
     while not protocol_parser('MOVEMENT', True, 'OFF', True): pass
     while not protocol_parser('ATMO', True, 'ON', True): pass
     while not protocol_parser('STATIC_IP', True, 'OFF', True): pass
@@ -44,6 +44,7 @@ def flow_states():
     if response != True:
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
+
     '''
     logging_device.info("\n\r\t\t-------- set Wifi with WPA secure --------")
     if not set_wifi_parameters('WolkSensorWlan2', 'WPA', 'WolkSensorFabrication'):
@@ -72,6 +73,7 @@ def flow_states():
         return_value = False
         logging_device.error("Return value is %s. Response from command NOW; is: %s" %(return_value, response))
     '''
+
     logging_device.log("\t---False flow---")
     if not set_wifi_parameters('my0penwl4n', 'NONE', 'NULL'):
         return_value = False
@@ -157,7 +159,7 @@ def flow_states():
     logging_device.log("%s, %s, %s" %(pressure, temp, humidity))
 
     logging_device.log("\tSET NEW OFFSET VALUES")
-    if not set_offset(10, 20, 30):
+    if not set_offset(1, 2, 3):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
     if not parse_readings('CLEAR', "show"):
@@ -177,11 +179,11 @@ def flow_states():
     pressure_new = test_readings_response(string_split[1], "show")[1]
     temp_new = test_readings_response(string_split[1], "show")[2]    
     humidity_new = test_readings_response(string_split[1], "show")[3]
-    logging_device.log("%s, %s, %s" %(pressure_new, temp_new, humidity_new))
+    logging_device.log("Sensors values with new offsets are: %s, %s, %s" %(pressure_new, temp_new, humidity_new))
 
-    if not ((int(temp) in range(int(temp_new) - 25, int(temp_new) - 15)) or (int(humidity) in range(int(humidity_new) - 35, int(humidity_new) - 25)) or (int(pressure) in range(int(pressure_new) - 15, int(pressure_new) - 5))):
-        return_value = False
+    if not ((int(float(temp)*100) in range(int(float(temp_new)*100) - 25*10, int(float(temp_new)*100) - 15*10)) or (int(float(humidity)*100) in range(int(float(humidity_new)*100) - 35*10, int(float(humidity_new)*100) - 25*10)) or (int(float(pressure)*100) in range(int(float(pressure_new)*100) - 15*10, int(float(pressure_new)*100) - 5*10))):
         logging_device.error("Return value is %s \n\rSet new offset values failed" %return_value)
+        return_value = False
     else:
         logging_device.log("\tSUCCESSFUL ARE SETS NEW OFFSET VALUES")
 
@@ -200,7 +202,7 @@ def flow_states():
     logging_device.log("\t -->MOVE WolkSensor to continue testing<--")
     send_string_serial_wait("READINGS;")
     received_string = receive_string_serial()
-    while ",M:1;" not in received_string:
+    while ",M:1.00;" not in received_string:
         send_string_serial_wait("READINGS;")
         received_string = receive_string_serial()
     time.sleep(0.5)
@@ -225,7 +227,7 @@ def flow_states():
     logging_device.info("\n\r\t\t-------- read System readings--------")
     logging_device.log("\t---True flow---")
     wait_dev_state_idle()
-    if not set_wifi_parameters('wolkabout', 'WPA2', 'Walkm3int0'):
+    if not set_wifi_parameters(constants.SSID, constants.AUTH, constants.PASS):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
@@ -331,7 +333,7 @@ def flow_states():
     while not set_wifi_parameters('NULL', 'NONE', 'NULL'): pass
     wait_dev_state_idle()
 
-    if not set_offset(-10, -5, 15):
+    if not set_offset(-10, -2, 1.5):
         return_value = False
         logging_device.error("Return value is %s" %return_value)
 
