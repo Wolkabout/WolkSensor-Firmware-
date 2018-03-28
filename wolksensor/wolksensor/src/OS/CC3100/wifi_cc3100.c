@@ -367,6 +367,8 @@ static uint8_t get_surroundig_networks(wifi_network_t* networks, uint8_t network
 
 static _i32 SetTime(void)
 {
+	LOG(1, "Updating certification Time");
+
 	_i32 retVal = -1;
 	SlDateTime_t dateTime= {0};
 
@@ -380,8 +382,9 @@ static _i32 SetTime(void)
 	dateTime.sl_tm_min = times->tm_min;
 	dateTime.sl_tm_sec = times->tm_sec;
 
-	retVal = sl_DevSet(SL_DEVICE_GENERAL_CONFIGURATION,SL_DEVICE_GENERAL_CONFIGURATION_DATE_TIME,
-	sizeof(SlDateTime_t),(_u8 *)(&dateTime));
+	LOG_PRINT(1, PSTR("Date and Time D/M/Y - H:M:S : %lu/%lu/%lu - %lu:%lu:%lu \n\r"), dateTime.sl_tm_day, dateTime.sl_tm_mon, dateTime.sl_tm_year, dateTime.sl_tm_hour, dateTime.sl_tm_min, dateTime.sl_tm_sec);
+
+	retVal = sl_DevSet(SL_DEVICE_GENERAL_CONFIGURATION,SL_DEVICE_GENERAL_CONFIGURATION_DATE_TIME, sizeof(SlDateTime_t),(_u8 *)(&dateTime));
 	ASSERT_ON_ERROR(retVal);
 
 	return SUCCESS;
@@ -569,9 +572,19 @@ bool init_wifi(void)
 		return false;
 	}
 
-	SetTime();
+	if(SetTime() < 0)
+	{
+		LOG(1, "Unable to Set Time");
+
+		return false;
+	}
 	
-	update_ca_cert();
+	if(update_ca_cert() < 0)
+	{
+		LOG(1, "Unable to update ca certificate");
+
+		return false;
+	}
 	
 	if(sl_Stop(1000) < 0)
 	{
@@ -915,8 +928,6 @@ int wifi_open_socket(char* address, uint16_t port, bool secure)
 	socket_address_in.sin_port = sl_Htons((uint16_t)server_port);
 
 	socket_address_in.sin_addr.s_addr = sl_Htonl((uint32_t)ip_address);
-	
-	SetTime();//Solution
 
 	uint8_t retries = 0;
 	int16_t connect_result = -1; 

@@ -307,7 +307,14 @@ bool load_offset_status(void)
 {
 	if (global_dependencies.config_read(&atmo_offset, CFG_OFFSET, 1, sizeof(atmo_offset)))
 	{
+		if((atmo_offset[0] > TEMPERATURE_OFFSET_MAX) || (atmo_offset[0] < TEMPERATURE_OFFSET_MIN))
+			atmo_offset[0] = 0;
+		if((atmo_offset[1] > PRESSURE_OFFSET_MAX) || (atmo_offset[1] < PRESSURE_OFFSET_MIN))
+			atmo_offset[1] = 0;
+		if((atmo_offset[2] > HUMIDITY_OFFSET_MAX) || (atmo_offset[2] < HUMIDITY_OFFSET_MIN))
+			atmo_offset[2] = 0;
 		LOG_PRINT(1, PSTR("Temperature offset is written: %.1f \n\rPressure offset is written: %.1f \n\rHumidity offset is written: %.1f \n\r"), atmo_offset[0], atmo_offset[1], atmo_offset[2]);
+
 		return true;
 	}
 
@@ -332,6 +339,12 @@ bool load_offset_factory_status(void)
 
 			return false;
 		}
+		if((atmo_offset_factory[0] > TEMPERATURE_OFFSET_MAX) || (atmo_offset_factory[0] < TEMPERATURE_OFFSET_MIN))
+			atmo_offset_factory[0] = 0;
+		if((atmo_offset_factory[1] > PRESSURE_OFFSET_MAX) || (atmo_offset_factory[1] < PRESSURE_OFFSET_MIN))
+			atmo_offset_factory[1] = 0;
+		if((atmo_offset_factory[2] > HUMIDITY_OFFSET_MAX) || (atmo_offset_factory[2] < HUMIDITY_OFFSET_MIN))
+			atmo_offset_factory[2] = 0;
 
 		return true;
 	}

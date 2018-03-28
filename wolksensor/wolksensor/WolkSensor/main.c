@@ -252,6 +252,7 @@ int main(void)
 	sei(); // allows interrupts, cli() disables them
 
 	RTC_init(start_type == POWER_ON);
+	chrono_init(start_type == POWER_ON);
 	
 	uart_init();
 	
