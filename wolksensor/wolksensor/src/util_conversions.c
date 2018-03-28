@@ -45,7 +45,7 @@ bool is_string_decimal_numeric(const char *str)
 		{
 			if(*str == '.')
 			{
-				if(strlen(str)==1)
+				if(strlen(str) == 1)
 					return false;
 				++str;
 				++number_of_dots;
@@ -57,7 +57,7 @@ bool is_string_decimal_numeric(const char *str)
 			++str;
 	}
 
-	if( number_of_dots>1 )
+	if(number_of_dots > 1)
 		return false;
 
 	return true;

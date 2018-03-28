@@ -11,10 +11,11 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <avr/pgmspace.h>
+#include <math.h>
 
 #define FW_VERSION_MAJOR 4 // number 0 -99
 #define FW_VERSION_MINOR 3 // number 0 -99
-#define FW_VERSION_PATCH 3 // number 0 -99
+#define FW_VERSION_PATCH 4 // number 0 -99
 
 #define SYNCHRONIZED_BLOCK_START register8_t saved_sreg = SREG; cli();
 #define SYNCHRONIZED_BLOCK_END SREG = saved_sreg;
